@@ -1,9 +1,10 @@
 import { registerRootComponent } from 'expo';
 import App from './src/App';
+
 if (typeof document !== 'undefined') {
-    const style = document.createElement('style');
-    style.id = 'device-shell';
-    style.textContent = `
+  const style = document.createElement('style');
+  style.id = 'device-shell';
+  style.textContent = `
 @media (min-width: 800px) {
   html, body {
     background: radial-gradient(1200px 820px at 50% 28%, #1c1c24 0%, #0a0a0d 72%) !important;
@@ -22,6 +23,7 @@ if (typeof document !== 'undefined') {
   }
 }
 `;
-    document.head.appendChild(style);
+  document.head.appendChild(style);
 }
+
 registerRootComponent(App);
