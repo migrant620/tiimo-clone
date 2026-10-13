@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   strip: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 16.1,
+    marginTop: 14.2,
     paddingHorizontal: 16,
   },
   cell: { flex: 1, maxWidth: 51.55, height: 50.6, borderRadius: 14, alignItems: 'center', paddingTop: 4.7 },
