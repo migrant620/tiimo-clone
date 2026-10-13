@@ -66,7 +66,7 @@ const serif = (recoletaSize: number, lineHeight: number) => ({
 });
 
 export const type = {
-  dateTitle: serif(26.6, 34.2),
+  dateTitle: serif(28, 36),
   monthCaption: { fontFamily: fonts.regular, fontSize: 12.98, lineHeight: 16.88, letterSpacing: 0.39 },
   section: { fontFamily: fonts.regular, fontSize: 12.98, lineHeight: 16.88, letterSpacing: 0.89 },
   placeholder: { fontFamily: fonts.regular, fontSize: 13.87, lineHeight: 16.88 },
@@ -79,9 +79,9 @@ export const type = {
   fieldLabel: { fontFamily: fonts.regular, fontSize: 14.24, lineHeight: 16.88 },
   heading: { fontFamily: fonts.medium, fontSize: 17.2, lineHeight: 25.32 },
   subtitle: { fontFamily: fonts.regular, fontSize: 17.3, lineHeight: 25.32 },
-  focusTitle: serif(26.6, 34.2),
+  focusTitle: serif(28, 36),
   dialogTitle: { fontFamily: fonts.serif, fontSize: 21.47, lineHeight: 31.16 },
-  timerDigits: { fontFamily: fonts.serif, fontSize: 42.75, lineHeight: 49.4 },
+  timerDigits: { fontFamily: fonts.serif, fontSize: 46, lineHeight: 53 },
   timeRange: { fontFamily: fonts.regular, fontSize: 16.88, lineHeight: 21.1 },
   weekdayLetter: { fontFamily: fonts.bold, fontSize: 9.92, lineHeight: 13.08 },
   weekdayNumber: { fontFamily: fonts.serif, fontSize: 16.25, lineHeight: 25.93 },
