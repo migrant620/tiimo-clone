@@ -19,7 +19,7 @@ const MENU_GLYPH: Record<string, GlyphName | null> = {
 };
 
 const scrim = 'rgba(0, 0, 0, 0.30)';
-const dialogScrim = 'rgba(0, 0, 0, 0.048)';
+const dialogScrim = 'rgba(0, 0, 0, 0.032)';
 const dialogBlur = { backdropFilter: 'blur(2px)', WebkitBackdropFilter: 'blur(2px)' } as object;
 
 export function ActionMenuSheet({
