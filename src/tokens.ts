@@ -5,6 +5,7 @@ export const colors = {
   sheet: '#F6F5F4',
   dialog: '#FCFCFC',
   ink: '#111717',
+  inkHeading: '#161412',
   muted: '#A7A7A7',
   primary: '#9F85FF',
   anytimePill: '#F6F5F4',

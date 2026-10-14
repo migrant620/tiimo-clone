@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
   plain: { backgroundColor: colors.surface },
   raised: { backgroundColor: colors.card, ...lift },
   saveCircle: { backgroundColor: colors.primary },
-  title: { ...typo.heading, color: colors.ink, position: 'absolute', top: form.titleTop, left: 64, right: 64, textAlign: 'center' },
+  title: { ...typo.heading, color: colors.inkHeading, position: 'absolute', top: form.titleTop, left: 64, right: 64, textAlign: 'center' },
   field: {
     backgroundColor: colors.surface,
     borderWidth: 1,
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
   pairField: { position: 'absolute', left: 0, right: 0, top: form.pairFieldTop, height: form.pairFieldHeight },
   pairInput: { ...typo.fieldValue, color: colors.ink, outlineStyle: 'none' } as object,
   card: { backgroundColor: colors.surface, borderRadius: form.cardRadius },
-  cardTitle: { ...typo.heading, color: colors.ink },
+  cardTitle: { ...typo.heading, color: colors.inkHeading },
   suggest: {
     backgroundColor: colors.card,
     borderRadius: 17.1,
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
   addSubtaskLabel: { ...typo.smallCapsMuted, color: colors.faintInk },
   addLock: { width: 16, height: 16, alignItems: 'center', justifyContent: 'center' },
   divider: { position: 'absolute', left: 0, right: 0, height: 0.7, backgroundColor: colors.dash },
-  toggleTitle: { ...typo.toggleTitle, color: colors.ink },
+  toggleTitle: { ...typo.toggleTitle, color: colors.inkHeading },
   toggleCaption: { ...typo.toggleCaption, color: colors.subtleInk },
   switchTrack: { justifyContent: 'center' },
   switchRail: { position: 'absolute', left: 5, width: 30.1, height: 14, borderRadius: 7, backgroundColor: colors.switchTrack },
