@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
   proPill: {
     position: 'absolute',
-    left: (frame.width - PRO_W) / 2 - 0.9,
+    left: (frame.width - PRO_W) / 2 + 0.15,
     width: PRO_W,
     height: CIRCLE,
     borderRadius: CIRCLE / 2,
