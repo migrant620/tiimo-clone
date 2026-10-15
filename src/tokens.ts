@@ -164,7 +164,7 @@ export const nav = {
   barLeft: 18.2,
   barWidth: 232.9,
   barHeight: 53.1,
-  barBottom: 41.9,
+  barBottom: 16.9,
   slotWidth: 75,
   slotHeight: 45.1,
   slotRadius: 22.5,
