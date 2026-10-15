@@ -68,7 +68,7 @@ const serif = (recoletaSize: number, lineHeight: number) => ({
 
 export const type = {
   dateTitle: serif(28, 36),
-  monthCaption: { fontFamily: fonts.regular, fontSize: 12.98, lineHeight: 16.88, letterSpacing: 0.05 },
+  monthCaption: { fontFamily: fonts.regular, fontSize: 12.98, lineHeight: 16.88, letterSpacing: -0.25 },
   section: { fontFamily: fonts.regular, fontSize: 12.98, lineHeight: 16.88, letterSpacing: 0.55 },
   placeholder: { fontFamily: fonts.regular, fontSize: 13.87, lineHeight: 16.88, letterSpacing: -0.34 },
   body: { fontFamily: fonts.regular, fontSize: 16.88, lineHeight: 21.1 },
