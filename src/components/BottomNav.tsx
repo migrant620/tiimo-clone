@@ -41,9 +41,10 @@ function Avatar() {
 interface Props {
   active: Tab;
   onSelect: (tab: Tab) => void;
+  onProfile?: () => void;
 }
 
-export function BottomNav({ active, onSelect }: Props) {
+export function BottomNav({ active, onSelect, onProfile }: Props) {
   const slot = (tab: Tab, content: React.ReactNode, label: string) => {
     const isActive = active === tab;
     return (
@@ -65,7 +66,12 @@ export function BottomNav({ active, onSelect }: Props) {
         {slot('today', <CalendarSlot active={active === 'today'} />, 'Today')}
         {slot('focus', <CrescentGlyph size={27} color={active === 'focus' ? colors.ink : colors.navInactive} />, 'Focus')}
       </View>
-      <Pressable accessibilityLabel="Profile" onPress={() => undefined} style={styles.avatarSlot}>
+      <Pressable
+        accessibilityLabel="Profile"
+        accessibilityState={{ selected: false }}
+        onPress={onProfile ?? (() => undefined)}
+        style={styles.avatarSlot}
+      >
         <Avatar />
       </Pressable>
     </View>
