@@ -10,11 +10,13 @@ import { UpdateTaskScreen } from './components/UpdateTaskScreen';
 import { TodayScreen } from './screens/TodayScreen';
 import { FocusScreen } from './screens/FocusScreen';
 import { TodoScreen } from './screens/TodoScreen';
+import { ProfileScreen } from './screens/ProfileScreen';
+import { SettingsScreen } from './screens/SettingsScreen';
 import { colors, fontFiles, frame } from './tokens';
 import { DEFAULT_MARKER, DEFAULT_REPEAT } from './model';
 import { isoOf } from './date';
 import { useTiimoState } from './useTiimoState';
-import type { ActionMenuRow, Task, TimeOfDay } from './model';
+import type { ActionMenuRow, Tab, Task, TimeOfDay } from './model';
 
 type Overlay =
   | { kind: 'menu'; task: Task }
@@ -38,9 +40,20 @@ function Shell() {
   const state = useTiimoState();
   const insets = useSafeAreaInsets();
   const [overlay, setOverlay] = React.useState<Overlay | null>(null);
+  const [profileOpen, setProfileOpen] = React.useState(false);
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
   const now = React.useMemo(() => new Date(), []);
 
   const close = () => setOverlay(null);
+  const selectTab = (tab: Tab) => {
+    setProfileOpen(false);
+    setSettingsOpen(false);
+    state.setTab(tab);
+  };
+  const openSettings = () => {
+    setProfileOpen(false);
+    setSettingsOpen(true);
+  };
 
   const onMenuSelect = (row: ActionMenuRow) => {
     if (overlay?.kind !== 'menu') return;
@@ -66,16 +79,17 @@ function Shell() {
     <View style={styles.root}>
       <View style={[styles.stage, { paddingTop: insets.top }]}>
         <StatusBar style="dark" />
-        {state.tab === 'today' ? (
+        {!profileOpen && !settingsOpen && state.tab === 'today' ? (
           <TodayScreen
             now={now}
             tasks={state.tasks}
             onOpenMenu={(task) => setOverlay({ kind: 'menu', task })}
             onToggleComplete={(task) => state.setCompleted(task.id, !task.done)}
             onQuickAdd={(section) => setOverlay({ kind: 'quickCreate', section })}
+            onSettings={openSettings}
           />
         ) : null}
-        {state.tab === 'focus' ? (
+        {!profileOpen && !settingsOpen && state.tab === 'focus' ? (
           <FocusScreen
             task={state.activeTask}
             timer={state.timer}
@@ -86,10 +100,19 @@ function Shell() {
             onCreateTask={() => setOverlay({ kind: 'create', section: 'anytime' })}
           />
         ) : null}
-        {state.tab === 'todo' ? (
-          <TodoScreen onQuickAdd={() => setOverlay({ kind: 'create', section: 'anytime' })} />
+        {!profileOpen && !settingsOpen && state.tab === 'todo' ? (
+          <TodoScreen onQuickAdd={() => setOverlay({ kind: 'create', section: 'anytime' })} onSettings={openSettings} />
         ) : null}
-        <BottomNav active={state.tab} onSelect={state.setTab} />
+        {profileOpen ? <ProfileScreen /> : null}
+        {settingsOpen ? <SettingsScreen /> : null}
+        <BottomNav
+          active={state.tab}
+          onSelect={selectTab}
+          onProfile={() => {
+            setSettingsOpen(false);
+            setProfileOpen(open => !open);
+          }}
+        />
 
         {overlay?.kind === 'create' ? (
           <View style={styles.cover} role="dialog" aria-modal>
