@@ -38,7 +38,9 @@ export function SectionPill({ label, count, expanded, onToggle, section, onAdd }
   return (
     <View style={styles.row}>
       <Pressable
+        accessibilityRole="button"
         accessibilityLabel={`${label} ${count}`}
+        accessibilityState={{ expanded }}
         onPress={onToggle}
         style={[
           styles.pill,

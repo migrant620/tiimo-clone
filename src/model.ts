@@ -93,7 +93,14 @@ export const ACTION_MENU_ROWS = [
 
 export type ActionMenuRow = (typeof ACTION_MENU_ROWS)[number];
 
-export const IMPLEMENTED_ROWS: ActionMenuRow[] = ['Start task', 'Edit task', 'Delete task'];
+export const IMPLEMENTED_ROWS: ActionMenuRow[] = [
+  'Make a copy',
+  'Reschedule task',
+  'Reschedule for tomorrow',
+  'Start task',
+  'Edit task',
+  'Delete task',
+];
 
 export const DEFAULT_MARKER = '\u{1F4DD}';
 

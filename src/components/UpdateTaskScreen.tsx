@@ -6,9 +6,8 @@ import { BreakdownGlyph, ClockGlyph } from './Glyphs';
 import { Icon } from './Icon';
 import type { GlyphName } from './Icon';
 import { CalendarPicker } from './CalendarPicker';
-import { RepeatPicker } from './RepeatPicker';
 import { colors, form, frame, lift, type as typo } from '../tokens';
-import { DEFAULT_REPEAT } from '../model';
+import { DEFAULT_REPEAT, REPEAT_OPTIONS } from '../model';
 import type { RepeatOption, Task, TimeOfDay } from '../model';
 import { dateLabel, fromIso } from '../date';
 
@@ -18,6 +17,8 @@ const TIME_OPTIONS: { value: TimeOfDay; label: string }[] = [
   { value: 'afternoon', label: 'Afternoon' },
   { value: 'evening', label: 'Evening' },
 ];
+
+const UNCAPTURED_TIME_OPTIONS = ['At time', 'All day'] as const;
 
 type Box = readonly [number, number, number, number];
 const at = ([left, top, width, height]: Box): ViewStyle => ({ position: 'absolute', left, top, width, height });
@@ -114,7 +115,7 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
         <View style={styles.rowIcon}>
           <ClockGlyph size={13.1} color={colors.ink} strokeWidth={2} />
         </View>
-        <Text style={styles.rowValue}>{TIME_OPTIONS.find((o) => o.value === timeOfDay)?.label}</Text>
+        <Text style={[styles.rowValue, styles.timeValue]}>{TIME_OPTIONS.find((o) => o.value === timeOfDay)?.label}</Text>
         <Icon name="chevronDown" size={20} lineHeight={21.1} color={colors.ink} style={[styles.rowChevron, pickerOpen && styles.flipped]} />
       </Pressable>
       <EdgeLabel text="Time of day" label={form.timeLabel} patch={form.timePatch} patchColor={colors.card} />
@@ -147,35 +148,39 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
         onPress={() => setRepeatOpen((open) => !open)}
         style={[span(form.repeatField), styles.field, styles.row]}
       >
-        <View style={styles.rowIcon}>
+        <View style={[styles.rowIcon, styles.repeatIcon]}>
           <Icon name="repeat" size={16} lineHeight={16.7} color={colors.ink} />
         </View>
-        <Text style={styles.rowValue}>{repeat}</Text>
+        <Text style={[styles.rowValue, styles.repeatValue]}>{repeat}</Text>
         <Icon name="chevronDown" size={20} lineHeight={21.1} color={colors.ink} style={[styles.rowChevron, repeatOpen && styles.flipped]} />
       </Pressable>
       <EdgeLabel text="Repeat" label={form.repeatLabel} patch={form.repeatPatch} patchColor={colors.card} />
 
       {repeatOpen ? (
-        <View
-          style={[
-            at(form.repeatField),
-            {
-              top: form.repeatField[1] + form.repeatField[3] + 4,
-              height: undefined,
-              width: form.repeatField[2],
-              zIndex: 30,
-            },
-          ]}
-        >
-          <RepeatPicker
-            inline
-            value={repeat}
-            onSelect={(option) => {
-              setRepeat(option);
-              setRepeatOpen(false);
-            }}
-            onDismiss={() => setRepeatOpen(false)}
-          />
+        <View style={[styles.picker, styles.repeatList]} accessibilityRole="radiogroup">
+          {REPEAT_OPTIONS.map((option) => {
+            const selected = option === repeat;
+            return (
+              <Pressable
+                key={option}
+                accessibilityRole="radio"
+                accessibilityLabel={`Repeat ${option}`}
+                accessibilityState={{ checked: selected }}
+                onPress={() => {
+                  setRepeat(option);
+                  setRepeatOpen(false);
+                }}
+                style={[styles.pickerRow, selected && styles.pickerRowSelected]}
+              >
+                <Text style={[styles.pickerLabel, selected && styles.pickerLabelSelected]}>{option}</Text>
+                {selected ? (
+                  <View style={styles.pickerCheck}>
+                    <Icon name="check" size={form.timePickerCheckSize} lineHeight={form.timePickerCheckBox} color={colors.primary} />
+                  </View>
+                ) : null}
+              </Pressable>
+            );
+          })}
         </View>
       ) : null}
 
@@ -228,6 +233,19 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
               </Pressable>
             );
           })}
+          {UNCAPTURED_TIME_OPTIONS.map((label) => (
+            <View
+              key={label}
+              accessible
+              accessibilityRole="radio"
+              accessibilityLabel={label}
+              accessibilityState={{ checked: false, disabled: true }}
+              aria-disabled
+              style={styles.pickerRow}
+            >
+              <Text style={styles.pickerLabel}>{label}</Text>
+            </View>
+          ))}
         </View>
       ) : null}
 
@@ -320,12 +338,15 @@ const styles = StyleSheet.create({
   edgeLabel: { ...typo.edgeLabel, color: colors.ink },
   nameInput: { ...typo.nameInput, color: colors.ink, paddingLeft: form.nameInset, outlineStyle: 'none' } as object,
   chip: { borderRadius: 20, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
-  chipGlyph: { fontSize: 21, lineHeight: 26.9 },
+  chipGlyph: { fontSize: 21, lineHeight: 26.9, top: 0.3 },
   chipLock: { borderRadius: 8, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center' },
   row: { flexDirection: 'row', alignItems: 'center' },
   rowIcon: { position: 'absolute', left: form.rowIconLeft },
   rowValue: { ...typo.fieldValue, color: colors.ink, marginLeft: form.rowValueLeft, flex: 1 },
-  rowChevron: { marginRight: form.rowChevronRight },
+  timeValue: { marginLeft: form.rowValueLeft - 1.0 },
+  repeatIcon: { left: form.rowIconLeft - 1.0 },
+  repeatValue: { marginLeft: form.rowValueLeft + 1.9 },
+  rowChevron: { marginRight: form.rowChevronRight - 1.0 },
   flipped: { transform: [{ rotate: '180deg' }] },
   pairRow: { flexDirection: 'row', gap: form.durationBox[0] - form.dateBox[0] - form.dateBox[2] },
   pairField: { position: 'absolute', left: 0, right: 0, top: form.pairFieldTop, height: form.pairFieldHeight },
@@ -378,6 +399,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     ...lift,
   },
+  repeatList: { top: form.repeatField[1] + form.repeatField[3], zIndex: 30 },
   pickerRow: {
     height: form.timePickerRowHeight,
     flexDirection: 'row',

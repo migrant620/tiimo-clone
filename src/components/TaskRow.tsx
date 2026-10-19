@@ -16,7 +16,7 @@ function TaskRowImpl({
   onOpenMenu: () => void;
 }) {
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={task.title} onPress={onOpenMenu} style={styles.card}>
+    <Pressable accessibilityRole="button" accessibilityLabel={task.title} onPress={onOpenMenu} style={[styles.card, task.done && styles.cardDone]}>
       <View style={styles.chip}>
         <Text style={styles.chipGlyph}>{task.marker ?? ''}</Text>
       </View>
@@ -55,14 +55,28 @@ export function PlaceholderRow({
   section: TimeOfDay;
   onQuickAdd: () => void;
 }) {
+  return <DashedAddCard copy={PLACEHOLDER_COPY[section]} label={`Add task to ${section}`} onPress={onQuickAdd} />;
+}
+
+export function DashedAddCard({
+  copy,
+  label,
+  onPress,
+  height,
+}: {
+  copy: string;
+  label: string;
+  onPress: () => void;
+  height?: number;
+}) {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`Add task to ${section}`}
-      onPress={onQuickAdd}
-      style={styles.placeholderCard}
+      accessibilityLabel={label}
+      onPress={onPress}
+      style={[styles.placeholderCard, height !== undefined && { height }]}
     >
-      <Text style={styles.placeholder}>{PLACEHOLDER_COPY[section]}</Text>
+      <Text style={styles.placeholder}>{copy}</Text>
       <View style={styles.plusWell}>
         <View style={styles.plusDisc}>
             <Icon name="plusThin" size={14.2} lineHeight={14.6} color={colors.plusInk} />
@@ -81,8 +95,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 12.3,
     paddingRight: 6,
+    paddingTop: space.cardContentDrop,
     marginTop: space.pillToCard,
   },
+  cardDone: { height: space.doneCardHeight, paddingBottom: space.doneCardHeight - space.cardHeight },
   chip: {
     width: 31,
     height: 31,
@@ -97,14 +113,14 @@ const styles = StyleSheet.create({
   caption: { ...typo.caption, color: colors.ink },
   circleSlot: { marginLeft: 'auto', marginRight: 6.8, width: 20, height: 20, alignItems: 'center', justifyContent: 'center' },
   placeholderCard: {
-    height: space.cardHeight,
+    height: space.placeholderHeight,
     borderRadius: space.cardRadius,
     borderWidth: space.dashWidth,
     borderStyle: 'dashed',
     borderColor: colors.dash,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 13.8 - space.dashWidth,
+    paddingLeft: 14.3 - space.dashWidth,
     paddingRight: 6 - space.dashWidth,
     marginTop: space.pillToCard,
   },
