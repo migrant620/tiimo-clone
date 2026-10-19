@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomNav } from './components/BottomNav';
 import { ActionMenuSheet, DeleteDialog } from './components/Overlays';
+import { CalendarPicker } from './components/CalendarPicker';
 import { QuickCreateSheet } from './components/QuickCreateSheet';
 import { UpdateTaskScreen } from './components/UpdateTaskScreen';
 import { TodayScreen } from './screens/TodayScreen';
@@ -14,7 +15,7 @@ import { ProfileScreen } from './screens/ProfileScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { colors, fontFiles, frame } from './tokens';
 import { DEFAULT_MARKER, DEFAULT_REPEAT } from './model';
-import { isoOf } from './date';
+import { addDays, fromIso, isoOf } from './date';
 import { useTiimoState } from './useTiimoState';
 import type { ActionMenuRow, Tab, Task, TimeOfDay } from './model';
 
@@ -23,7 +24,8 @@ type Overlay =
   | { kind: 'quickCreate'; section: TimeOfDay }
   | { kind: 'create'; section: TimeOfDay }
   | { kind: 'edit'; task: Task }
-  | { kind: 'delete'; task: Task };
+  | { kind: 'delete'; task: Task }
+  | { kind: 'reschedule'; task: Task };
 
 const NEW_TASK: Task = {
   id: 'draft',
@@ -68,6 +70,17 @@ function Shell() {
         break;
       case 'Delete task':
         setOverlay({ kind: 'delete', task });
+        break;
+      case 'Make a copy':
+        close();
+        state.createTask(task.title, task.durationMin, task.timeOfDay, task.repeat, task.notes, task.date);
+        break;
+      case 'Reschedule for tomorrow':
+        close();
+        state.updateTask(task.id, { date: isoOf(addDays(fromIso(task.date), 1)) });
+        break;
+      case 'Reschedule task':
+        setOverlay({ kind: 'reschedule', task });
         break;
       default:
         close();
@@ -169,6 +182,16 @@ function Shell() {
       ) : null}
       {overlay?.kind === 'menu' ? (
         <ActionMenuSheet task={overlay.task} onSelect={onMenuSelect} onDismiss={close} />
+      ) : null}
+      {overlay?.kind === 'reschedule' ? (
+        <CalendarPicker
+          value={overlay.task.date}
+          onSave={(iso) => {
+            state.updateTask(overlay.task.id, { date: iso });
+            close();
+          }}
+          onDismiss={close}
+        />
       ) : null}
       {overlay?.kind === 'delete' ? (
         <DeleteDialog

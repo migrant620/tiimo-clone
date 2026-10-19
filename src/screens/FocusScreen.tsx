@@ -40,7 +40,7 @@ export function FocusScreen({ task, timer, onToggleTimer, onRingPress, onCreateT
         </Pressable>
       </View>
 
-      <View style={styles.heading}>
+      <View style={[styles.heading, task ? styles.headingTask : styles.headingEmpty]}>
         <Text accessibilityRole="header" style={styles.title}>
           {task ? task.title : 'Focus'}
         </Text>
@@ -109,6 +109,8 @@ const styles = StyleSheet.create({
   proLabel: { ...typo.button, color: colors.ink },
   proLabelQuiet: { color: colors.quietInk },
   heading: { position: 'absolute', top: 108.25, alignItems: 'stretch' },
+  headingTask: { top: 109.15 },
+  headingEmpty: { top: 107.65 },
   title: { ...typo.focusTitle, color: colors.ink, textAlign: 'center' },
   subtitle: { ...typo.subtitle, color: colors.ink, textAlign: 'center' },
   timeRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2.85 },

@@ -49,7 +49,7 @@ export function ActionMenuSheet({
                 key={row}
                 accessibilityLabel={implemented ? row : `${row} (not implemented)`}
                 onPress={() => onSelect(row)}
-                style={styles.menuRow}
+                style={[styles.menuRow, row === 'Suggest breakdown' && styles.menuRowShort]}
               >
                 <View style={styles.menuIcon}>
                   {Glyph ? (
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 34,
     borderTopRightRadius: 34,
     paddingTop: 20,
-    paddingBottom: 16,
+    paddingBottom: 15,
     paddingHorizontal: 16,
   },
   menuRow: {
@@ -123,7 +123,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 20,
   },
-  menuIcon: { width: 20, alignItems: 'center' },
+  menuRowShort: { height: 48 },
+  menuIcon: { width: 20, alignItems: 'center', marginTop: 1.5 },
   menuLabel: { ...typo.menuRow, color: colors.ink, marginLeft: 12 },
   menuLabelDanger: { color: colors.danger },
   dialogWrap: {
@@ -142,10 +143,10 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     paddingHorizontal: 23.6,
     paddingTop: 23.9,
-    paddingBottom: 23.4,
+    paddingBottom: 22.5,
   },
   dialogTitle: { ...typo.dialogTitle, color: colors.ink },
-  dialogButtons: { flexDirection: 'row', marginTop: 31.9, gap: 16 },
+  dialogButtons: { flexDirection: 'row', marginTop: 32.8, gap: 16 },
   dialogButton: { flex: 1, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   cancelButton: { backgroundColor: colors.cancelFill },
   deleteButton: { backgroundColor: colors.dangerFill },

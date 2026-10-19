@@ -2,9 +2,20 @@ import * as React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SparkleGlyph } from './Glyphs';
 import { Icon } from './Icon';
+import type { GlyphName } from './Icon';
 import { colors, frame, lift, space, type as typo } from '../tokens';
 
-export function TodayHeader({ onAdd, onSettings }: { onAdd: () => void; onSettings?: () => void }) {
+export function TodayHeader({
+  onAdd,
+  onSettings,
+  menuGlyph = 'cog',
+  menuLabel = 'Settings',
+}: {
+  onAdd: () => void;
+  onSettings?: () => void;
+  menuGlyph?: GlyphName;
+  menuLabel?: string;
+}) {
   return (
     <View style={styles.row}>
       <Pressable accessibilityLabel="Get Pro" onPress={() => undefined} style={styles.proPill}>
@@ -12,8 +23,8 @@ export function TodayHeader({ onAdd, onSettings }: { onAdd: () => void; onSettin
         <SparkleGlyph size={18} color={colors.primary} />
       </Pressable>
       <View style={styles.controls}>
-        <Pressable accessibilityLabel="Settings" onPress={onSettings ?? (() => undefined)} style={styles.circle}>
-          <Icon name="cog" size={24} color={colors.ink} />
+        <Pressable accessibilityLabel={menuLabel} onPress={onSettings ?? (() => undefined)} style={styles.circle}>
+          <Icon name={menuGlyph} size={24} color={colors.ink} />
         </Pressable>
         <Pressable accessibilityLabel="Add task" onPress={onAdd} style={styles.circle}>
           <Icon name="plus" size={24} lineHeight={24.7} color={colors.ink} />

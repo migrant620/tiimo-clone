@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { TodayHeader } from '../components/TodayHeader';
-import { Chevron, FlagGlyph, Plus } from '../components/Glyphs';
+import { DashedAddCard } from '../components/TaskRow';
+import { Icon } from '../components/Icon';
+import type { GlyphName } from '../components/Icon';
 import { colors, space, type as typo } from '../tokens';
 import { PRIORITY_HINT, PRIORITY_LABEL, PRIORITY_ORDER } from '../model';
 import type { Priority } from '../model';
@@ -14,12 +16,12 @@ const TINT: Record<Priority, string> = {
   done: colors.donePill,
 };
 
-const HAS_ICON: Record<Priority, boolean> = {
-  high: true,
-  medium: true,
-  low: true,
-  todo: false,
-  done: false,
+const GLYPH: Record<Priority, { name: GlyphName; flip: boolean } | null> = {
+  high: { name: 'priorityTriangle', flip: false },
+  medium: { name: 'priorityDot', flip: false },
+  low: { name: 'priorityTriangle', flip: true },
+  todo: null,
+  done: null,
 };
 
 function PriorityPill({
@@ -33,38 +35,50 @@ function PriorityPill({
   expanded: boolean;
   onToggle: () => void;
 }) {
+  const glyph = GLYPH[priority];
   return (
     <Pressable
+      accessibilityRole="button"
       accessibilityLabel={`${PRIORITY_LABEL[priority]} ${count}`}
+      accessibilityState={{ expanded }}
       onPress={onToggle}
       style={[styles.pill, { backgroundColor: TINT[priority] }]}
     >
-      {HAS_ICON[priority] ? (
+      {glyph ? (
         <View style={styles.pillIcon}>
-          <FlagGlyph size={15} color={colors.ink} />
+          <Icon
+            name={glyph.name}
+            size={space.priorityGlyph}
+            color={colors.ink}
+            style={glyph.flip ? styles.flipped : null}
+          />
         </View>
       ) : null}
       <Text style={styles.pillLabel}>{`${PRIORITY_LABEL[priority]} (${count})`}</Text>
-      <Chevron size={16} color={colors.ink} up={!expanded} />
+      <Icon name="chevronUp" size={16} color={colors.ink} style={[styles.chevron, expanded && styles.flipped]} />
     </Pressable>
   );
 }
 
 export function TodoScreen({ onQuickAdd, onSettings }: { onQuickAdd: () => void; onSettings?: () => void }) {
-  const [collapsed, setCollapsed] = React.useState<Record<string, boolean>>({});
+  const [collapsed, setCollapsed] = React.useState<Record<string, boolean>>({ done: true });
   const toggle = (key: string) => setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
 
   return (
     <View style={styles.page}>
-      <TodayHeader onAdd={onQuickAdd} onSettings={onSettings} />
+      <TodayHeader onAdd={onQuickAdd} onSettings={onSettings} menuGlyph="dotsVertical" menuLabel="More options" />
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         accessibilityLabel="To-do list"
       >
         <View style={styles.titleRow}>
-          <Text style={styles.title}>To-do</Text>
-          <Chevron size={18} color={colors.ink} />
+          <Text accessibilityRole="header" style={styles.title}>
+            To-do
+          </Text>
+          <Pressable accessibilityRole="button" accessibilityLabel="Add to-do" onPress={onQuickAdd} hitSlop={10} style={styles.titleAdd}>
+            <Icon name="plusThin" size={14.2} lineHeight={14.6} color={colors.plusInk} />
+          </Pressable>
         </View>
 
         {PRIORITY_ORDER.map((priority, index) => {
@@ -78,23 +92,19 @@ export function TodoScreen({ onQuickAdd, onSettings }: { onQuickAdd: () => void;
                 onToggle={() => toggle(priority)}
               />
               {isCollapsed ? null : (
-                <Pressable
-                  accessibilityLabel={`Add to-do to ${priority}`}
+                <DashedAddCard
+                  copy={PRIORITY_HINT[priority]}
+                  label={`Add to-do to ${PRIORITY_LABEL[priority]}`}
                   onPress={onQuickAdd}
-                  style={styles.hintCard}
-                >
-                  <Text style={styles.hint}>{PRIORITY_HINT[priority]}</Text>
-                  <View style={styles.plusWell}>
-                    <Plus size={17} color={colors.muted} strokeWidth={1.6} />
-                  </View>
-                </Pressable>
+                  height={space.priorityCardHeight}
+                />
               )}
             </View>
           );
         })}
 
         <View style={styles.section}>
-          <PriorityPill priority="done" count={0} expanded={false} onToggle={() => toggle('done')} />
+          <PriorityPill priority="done" count={0} expanded={collapsed.done !== true} onToggle={() => toggle('done')} />
         </View>
       </ScrollView>
     </View>
@@ -105,46 +115,40 @@ const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.surface },
   content: { paddingBottom: space.navHeight + space.navBottom + 24 },
   titleRow: {
-    marginTop: 10,
-    paddingHorizontal: space.page,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    marginTop: space.todoTitleTop,
+    height: space.todoTitleHeight,
+    paddingLeft: space.todoTitleLeft,
+    justifyContent: 'center',
   },
-  title: { ...typo.dateTitle, color: colors.ink },
+  title: { ...typo.dateTitle, lineHeight: space.todoTitleHeight, color: colors.ink },
+  titleAdd: {
+    position: 'absolute',
+    left: space.todoTitleAddLeft,
+    top: space.todoTitleAddTop,
+    width: 18.4,
+    height: 18.4,
+    borderRadius: 9.2,
+    backgroundColor: colors.sheet,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   section: { marginTop: space.priorityCardToNext, paddingHorizontal: space.page },
   firstSection: { marginTop: space.priorityFirstSection },
   pill: {
     height: space.priorityPillHeight,
     borderRadius: space.priorityPillHeight / 2,
-    paddingLeft: 11,
-    paddingRight: 16,
+    paddingHorizontal: space.priorityPillPadX,
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    gap: 6,
   },
-  pillIcon: { width: 14, alignItems: 'center', justifyContent: 'center' },
-  pillLabel: { ...typo.section, color: colors.ink },
-  hintCard: {
-    height: space.cardHeight,
-    borderRadius: space.cardRadius,
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: colors.dash,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: 13,
-    paddingRight: 6,
-    marginTop: space.priorityPillToCard,
-  },
-  hint: { ...typo.body, color: colors.muted, flex: 1 },
-  plusWell: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: colors.sheet,
+  pillIcon: {
+    width: space.priorityGlyph,
+    marginRight: space.priorityGlyphGap,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  pillLabel: { ...typo.section, color: colors.ink },
+  chevron: { marginLeft: space.priorityChevronGap },
+  flipped: { transform: [{ rotate: '180deg' }] },
 });

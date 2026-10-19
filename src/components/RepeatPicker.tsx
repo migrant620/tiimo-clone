@@ -1,24 +1,22 @@
 import * as React from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { RadioGlyph } from './Glyphs';
-import { colors, lift, space, type as typo } from '../tokens';
-import { REPEAT_CARD_OPTIONS, REPEAT_OPTIONS } from '../model';
+import { colors, space, type as typo } from '../tokens';
+import { REPEAT_CARD_OPTIONS } from '../model';
 import type { RepeatOption } from '../model';
 
 export function RepeatPicker({
   value,
   onSelect,
   onDismiss,
-  inline,
 }: {
   value: RepeatOption;
   onSelect: (option: RepeatOption) => void;
   onDismiss: () => void;
-  inline?: boolean;
 }) {
-  const options = inline ? REPEAT_OPTIONS : REPEAT_CARD_OPTIONS;
+  const options = REPEAT_CARD_OPTIONS;
   const card = (
-    <View style={inline ? styles.inlineCard : styles.repeatCard}>
+    <View style={styles.repeatCard}>
       <Text accessibilityRole="header" style={styles.repeatTitle}>
         Repeat
       </Text>
@@ -46,10 +44,6 @@ export function RepeatPicker({
     </View>
   );
 
-  if (inline) {
-    return card;
-  }
-
   return (
     <Modal transparent visible animationType="none" onRequestClose={onDismiss}>
       <Pressable
@@ -74,14 +68,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.repeatCardPadX,
     paddingTop: space.repeatCardPadTop,
     paddingBottom: space.repeatCardPadBottom,
-  },
-  inlineCard: {
-    backgroundColor: colors.surface,
-    borderRadius: space.repeatCardRadius,
-    paddingHorizontal: space.repeatCardPadX,
-    paddingTop: space.repeatCardPadTop,
-    paddingBottom: space.repeatCardPadBottom,
-    ...lift,
   },
   repeatTitle: { ...typo.pickerTitle, color: colors.ink },
   repeatList: {
