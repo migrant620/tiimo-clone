@@ -44,8 +44,8 @@ export function DateHeader({ weekStart, selectedIso, onSelect, onWeekShift }: Pr
             <Pressable
               key={day.iso}
               accessibilityRole="button"
-              accessibilityState={{ selected }}
-              accessibilityLabel={`${day.letter} ${day.date}`}
+              aria-selected={selected}
+              accessibilityLabel={`${day.letter}, ${day.date}`}
               onPress={() => onSelect(day.iso)}
               style={[styles.cell, selected && styles.cellSelected]}
             >
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     marginTop: 13.1,
   },
   title: { ...typo.dateTitle, color: colors.ink },
-  month: { ...typo.monthCaption, color: colors.ink, marginBottom: 9.65, paddingLeft: 3.4 },
+  month: { ...typo.monthCaption, color: colors.ink, marginBottom: 9.65 },
   strip: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   cell: { flex: 1, maxWidth: 51.55, height: 50.6, borderRadius: 14, alignItems: 'center', paddingTop: 4.7 },
   cellSelected: { backgroundColor: colors.sheet },
-  letter: { ...typo.weekdayLetter, color: colors.muted },
+  letter: { ...typo.weekdayLetter, color: colors.muted, left: -0.3 },
   number: { ...typo.weekdayNumber, color: colors.muted, marginTop: 2.5 },
   selectedInk: { color: colors.primary },
 });

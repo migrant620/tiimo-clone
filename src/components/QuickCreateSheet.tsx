@@ -4,7 +4,7 @@ import { ClockGlyph, MoreGlyph, RepeatGlyph } from './Glyphs';
 import { Icon } from './Icon';
 import { RepeatPicker } from './RepeatPicker';
 import { colors, space, type as typo } from '../tokens';
-import { DEFAULT_REPEAT } from '../model';
+import { DEFAULT_MARKER, DEFAULT_REPEAT } from '../model';
 import type { RepeatOption, TimeOfDay } from '../model';
 
 const scrim = 'rgba(0, 0, 0, 0.30)';
@@ -56,10 +56,12 @@ export function QuickCreateSheet({
   section,
   onDismiss,
   onSubmit,
+  onMore,
 }: {
   section: TimeOfDay;
   onDismiss: () => void;
   onSubmit: (title: string, durationMin: number, timeOfDay: TimeOfDay, repeat: RepeatOption) => void;
+  onMore?: (title: string, durationMin: number, timeOfDay: TimeOfDay, repeat: RepeatOption) => void;
 }) {
   const [title, setTitle] = React.useState('');
   const [repeat, setRepeat] = React.useState<RepeatOption>(DEFAULT_REPEAT);
@@ -70,6 +72,7 @@ export function QuickCreateSheet({
     if (value.length === 0) return;
     onSubmit(value, 30, section, repeat);
   };
+  const typed = title.trim().length > 0;
 
   return (
     <Modal transparent visible animationType="none" onRequestClose={onDismiss}>
@@ -89,12 +92,15 @@ export function QuickCreateSheet({
           placeholder="Type to begin"
           placeholderTextColor={colors.placeholder}
           returnKeyType="done"
-          style={[styles.input, title.trim().length > 0 && styles.inputWithSubmit]}
+          style={[styles.input, typed && styles.inputTyped]}
         />
-        {title.trim().length > 0 ? (
-          <Pressable accessibilityRole="button" accessibilityLabel="Create task" onPress={submit} style={styles.submit}>
-            <Icon name="arrowRight" size={18} color={colors.card} />
-          </Pressable>
+        {typed ? (
+          <View style={styles.markerChip} pointerEvents="none" aria-hidden>
+            <Text style={styles.markerGlyph}>{DEFAULT_MARKER}</Text>
+            <View style={styles.markerBadge}>
+              <Icon name="lock" size={10.2} color={colors.lockInk} />
+            </View>
+          </View>
         ) : null}
 
         <View style={styles.meta}>
@@ -118,12 +124,17 @@ export function QuickCreateSheet({
           />
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="More options (not implemented)"
-            onPress={() => undefined}
+            accessibilityLabel="More options"
+            onPress={() => onMore?.(title.trim(), 30, section, repeat)}
             style={styles.more}
           >
             <MoreGlyph size={space.quickCreateGlyph} color={colors.ink} />
           </Pressable>
+          {typed ? (
+            <Pressable accessibilityRole="button" accessibilityLabel="Create task" onPress={submit} style={styles.submit}>
+              <Icon name="arrowUp" size={space.quickCreateSubmitGlyph} color={colors.card} />
+            </Pressable>
+          ) : null}
         </View>
       </View>
 
@@ -172,16 +183,39 @@ const styles = StyleSheet.create({
   },
   submit: {
     position: 'absolute',
-    right: space.quickCreatePadLeft,
-    top: space.quickCreatePadTop + (space.quickCreateInputHeight - 32) / 2,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.primary,
+    left: space.quickCreateSubmitLeft - space.quickCreatePadLeft,
+    top: space.quickCreateSubmitTop - space.quickCreatePadTop - space.quickCreateInputHeight - space.quickCreateInputToMeta,
+    width: space.quickCreateSubmitSize,
+    height: space.quickCreateSubmitSize,
+    borderRadius: space.quickCreateSubmitSize / 2,
+    backgroundColor: colors.inkHeading,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  inputWithSubmit: { paddingRight: 40 },
+  inputTyped: { paddingRight: space.quickCreatePadLeft + space.quickCreateInputWidth - space.quickCreateChipLeft + 4 },
+  markerChip: {
+    position: 'absolute',
+    left: space.quickCreateChipLeft,
+    top: space.quickCreateChipTop,
+    width: space.quickCreateChipSize,
+    height: space.quickCreateChipSize,
+    borderRadius: space.quickCreateChipSize / 2,
+    backgroundColor: colors.timePickerSelected,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  markerGlyph: { fontSize: 15.2, lineHeight: 20.7 },
+  markerBadge: {
+    position: 'absolute',
+    right: 8 - space.quickCreateBadgeSize / 2,
+    bottom: 8 - space.quickCreateBadgeSize / 2,
+    width: space.quickCreateBadgeSize,
+    height: space.quickCreateBadgeSize,
+    borderRadius: space.quickCreateBadgeSize / 2,
+    backgroundColor: colors.dash,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   chip: {
     position: 'absolute',
     height: space.quickCreateMetaHeight,

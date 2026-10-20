@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Chevron, ClockGlyph, GearGlyph, SparkleGlyph } from '../components/Glyphs';
-import { colors, lift, nav, space, type as typo } from '../tokens';
+import { colors, fonts, lift, nav, space, type as typo } from '../tokens';
 
 const STATS = [
   { key: 'tasks', value: '0', label: 'Tasks done' },
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     ...lift,
   },
   avatarInitial: { ...typo.dateTitle, fontSize: 30, color: colors.ink },
-  name: { ...typo.body, color: colors.ink, marginTop: 14, fontFamily: 'Roboto-500' },
+  name: { ...typo.body, color: colors.ink, marginTop: 14, fontFamily: fonts.medium },
   caption: { ...typo.caption, color: colors.muted, marginTop: 5 },
   signIn: {
     height: space.cardHeight,

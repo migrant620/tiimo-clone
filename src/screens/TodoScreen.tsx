@@ -40,7 +40,7 @@ function PriorityPill({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={`${PRIORITY_LABEL[priority]} ${count}`}
-      accessibilityState={{ expanded }}
+      aria-expanded={expanded}
       onPress={onToggle}
       style={[styles.pill, { backgroundColor: TINT[priority] }]}
     >

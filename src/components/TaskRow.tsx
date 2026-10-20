@@ -29,7 +29,7 @@ function TaskRowImpl({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={task.done ? 'Undo completion' : 'Complete task'}
-        accessibilityState={{ checked: task.done }}
+        aria-checked={task.done}
         hitSlop={12}
         onPress={onToggleComplete}
         style={styles.circleSlot}
@@ -121,12 +121,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingLeft: 14.3 - space.dashWidth,
-    paddingRight: 6 - space.dashWidth,
+    paddingRight: 6.5 - space.dashWidth,
     marginTop: space.pillToCard,
   },
-  placeholder: { ...typo.placeholder, color: colors.muted, flex: 1 },
+  placeholder: { ...typo.placeholder, color: colors.muted, flexShrink: 1 },
   doneDisc: { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
-  plusWell: { width: 34.2, height: 34.2, alignItems: 'center', justifyContent: 'center' },
+  plusWell: { width: 34.2, height: 34.2, marginLeft: 'auto', alignItems: 'center', justifyContent: 'center' },
   plusDisc: {
     width: 18.4,
     height: 18.4,

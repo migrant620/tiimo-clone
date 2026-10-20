@@ -40,7 +40,7 @@ export function SectionPill({ label, count, expanded, onToggle, section, onAdd }
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${label} ${count}`}
-        accessibilityState={{ expanded }}
+        aria-expanded={expanded}
         onPress={onToggle}
         style={[
           styles.pill,

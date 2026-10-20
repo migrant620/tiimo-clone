@@ -144,7 +144,7 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Repeat"
-        accessibilityState={{ expanded: repeatOpen }}
+        aria-expanded={repeatOpen}
         onPress={() => setRepeatOpen((open) => !open)}
         style={[span(form.repeatField), styles.field, styles.row]}
       >
@@ -165,7 +165,7 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
                 key={option}
                 accessibilityRole="radio"
                 accessibilityLabel={`Repeat ${option}`}
-                accessibilityState={{ checked: selected }}
+                aria-checked={selected}
                 onPress={() => {
                   setRepeat(option);
                   setRepeatOpen(false);
@@ -217,7 +217,7 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
                 key={option.value}
                 accessibilityRole="radio"
                 accessibilityLabel={`Set ${option.label}`}
-                accessibilityState={{ checked: selected }}
+                aria-checked={selected}
                 onPress={() => {
                   setTimeOfDay(option.value);
                   setPickerOpen(false);
@@ -239,7 +239,7 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
               accessible
               accessibilityRole="radio"
               accessibilityLabel={label}
-              accessibilityState={{ checked: false, disabled: true }}
+              aria-checked={false}
               aria-disabled
               style={styles.pickerRow}
             >
@@ -304,7 +304,7 @@ function SubtaskCard() {
       <Pressable
         accessibilityRole="switch"
         accessibilityLabel="Sub-task timers"
-        accessibilityState={{ checked: false }}
+        aria-checked={false}
         onPress={() => undefined}
         style={[right(form.switchBox, CARD_W), styles.switchTrack]}
       >

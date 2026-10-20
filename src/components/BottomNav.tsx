@@ -50,7 +50,7 @@ export function BottomNav({ active, onSelect, onProfile }: Props) {
     return (
       <Pressable
         accessibilityLabel={label}
-        accessibilityState={{ selected: isActive }}
+        aria-selected={isActive}
         onPress={() => onSelect(tab)}
         style={[styles.slot, isActive && styles.slotActive]}
       >
@@ -68,7 +68,7 @@ export function BottomNav({ active, onSelect, onProfile }: Props) {
       </View>
       <Pressable
         accessibilityLabel="Profile"
-        accessibilityState={{ selected: false }}
+        aria-selected={false}
         onPress={onProfile ?? (() => undefined)}
         style={styles.avatarSlot}
       >
