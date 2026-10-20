@@ -1,4 +1,7 @@
 
+import { Platform } from 'react-native';
+import { FontDisplay } from 'expo-font';
+
 export const colors = {
   surface: '#FCFCFC',
   card: '#FFFFFF',
@@ -42,21 +45,25 @@ export const colors = {
 } as const;
 
 export const fontFiles = {
-  'Roboto-400': require('../assets/fonts/Roboto_400Regular.ttf'),
-  'Roboto-500': require('../assets/fonts/Roboto_500Medium.ttf'),
-  'Roboto-700': require('../assets/fonts/Roboto_700Bold.ttf'),
-  'Fraunces-400': require('../assets/fonts/Fraunces_400Regular.ttf'),
-  MDI: require('../assets/fonts/MaterialCommunityIcons.ttf'),
-  Feather: require('../assets/fonts/Feather.ttf'),
-  AntDesign: require('../assets/fonts/AntDesign.ttf'),
-  FontAwesome: require('../assets/fonts/FontAwesome.ttf'),
+  'Roboto-400': { uri: require('../assets/fonts/Roboto_400Regular.ttf'), display: FontDisplay.SWAP },
+  'Roboto-500': { uri: require('../assets/fonts/Roboto_500Medium.ttf'), display: FontDisplay.SWAP },
+  'Roboto-700': { uri: require('../assets/fonts/Roboto_700Bold.ttf'), display: FontDisplay.SWAP },
+  'Fraunces-400': { uri: require('../assets/fonts/Fraunces_400Regular.ttf'), display: FontDisplay.SWAP },
+  MDI: { uri: require('../assets/fonts/MaterialCommunityIcons.ttf'), display: FontDisplay.SWAP },
+  Feather: { uri: require('../assets/fonts/Feather.ttf'), display: FontDisplay.SWAP },
+  Entypo: { uri: require('../assets/fonts/Entypo-Plus.ttf'), display: FontDisplay.SWAP },
+  FA6Solid: { uri: require('../assets/fonts/FontAwesome6Solid-ArrowRight.ttf'), display: FontDisplay.SWAP },
 };
 
+const SANS_FALLBACK = ', Roboto, "Segoe UI", "Helvetica Neue", Arial, sans-serif';
+const SERIF_FALLBACK = ', Georgia, "Times New Roman", serif';
+const withFallback = (face: string, stack: string) => (Platform.OS === 'web' ? `${face}${stack}` : face);
+
 export const fonts = {
-  regular: 'Roboto-400',
-  medium: 'Roboto-500',
-  bold: 'Roboto-700',
-  serif: 'Fraunces-400',
+  regular: withFallback('Roboto-400', SANS_FALLBACK),
+  medium: withFallback('Roboto-500', SANS_FALLBACK),
+  bold: withFallback('Roboto-700', SANS_FALLBACK),
+  serif: withFallback('Fraunces-400', SERIF_FALLBACK),
 } as const;
 
 const SERIF_SCALE = 5.176 / 5.459;
@@ -68,17 +75,17 @@ const serif = (recoletaSize: number, lineHeight: number) => ({
 
 export const type = {
   dateTitle: serif(28, 36),
-  monthCaption: { fontFamily: fonts.regular, fontSize: 12.98, lineHeight: 16.88, letterSpacing: -0.25 },
-  section: { fontFamily: fonts.regular, fontSize: 12.98, lineHeight: 16.88, letterSpacing: 0.55 },
-  placeholder: { fontFamily: fonts.regular, fontSize: 13.87, lineHeight: 16.88, letterSpacing: -0.34 },
-  body: { fontFamily: fonts.regular, fontSize: 16.88, lineHeight: 21.1 },
-  button: { fontFamily: fonts.medium, fontSize: 15.3, lineHeight: 21.1, letterSpacing: -0.4 },
-  menuRow: { fontFamily: fonts.regular, fontSize: 15.3, lineHeight: 21.1 },
-  buttonStrong: { fontFamily: fonts.medium, fontSize: 15.3, lineHeight: 21.1, letterSpacing: -0.4 },
-  taskTitle: { fontFamily: fonts.medium, fontSize: 15.09, lineHeight: 18.04 },
-  caption: { fontFamily: fonts.regular, fontSize: 12.3, lineHeight: 14.77, letterSpacing: -0.12 },
+  monthCaption: { fontFamily: fonts.medium, fontSize: 12.3, lineHeight: 16.88, letterSpacing: 0.33 },
+  section: { fontFamily: fonts.medium, fontSize: 12.3, lineHeight: 16.88, letterSpacing: 0.86 },
+  placeholder: { fontFamily: fonts.regular, fontSize: 13.15, lineHeight: 16.88 },
+  body: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 21.1 },
+  button: { fontFamily: fonts.medium, fontSize: 14.5, lineHeight: 21.1 },
+  menuRow: { fontFamily: fonts.regular, fontSize: 14.6, lineHeight: 21.1 },
+  buttonStrong: { fontFamily: fonts.medium, fontSize: 14.5, lineHeight: 21.1 },
+  taskTitle: { fontFamily: fonts.medium, fontSize: 14.3, lineHeight: 18.04 },
+  caption: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 14.77 },
   fieldLabel: { fontFamily: fonts.regular, fontSize: 13.6, lineHeight: 16.88 },
-  heading: { fontFamily: fonts.medium, fontSize: 17.2, lineHeight: 25.32, letterSpacing: -0.4 },
+  heading: { fontFamily: fonts.medium, fontSize: 16.3, lineHeight: 25.32 },
   subtitle: { fontFamily: fonts.regular, fontSize: 16.39, lineHeight: 25.32 },
   focusTitle: serif(28, 36),
   dialogTitle: { fontFamily: fonts.serif, fontSize: 21.47, lineHeight: 31.16 },
@@ -86,23 +93,23 @@ export const type = {
   timeRange: { fontFamily: fonts.regular, fontSize: 16.15, lineHeight: 21.1 },
   weekdayLetter: { fontFamily: fonts.bold, fontSize: 9.23, lineHeight: 13.08 },
   weekdayNumber: { fontFamily: fonts.serif, fontSize: 17.06, lineHeight: 25.93 },
-  smallCaps: { fontFamily: fonts.regular, fontSize: 12.98, lineHeight: 16.88, letterSpacing: 0.46 },
+  smallCaps: { fontFamily: fonts.medium, fontSize: 12.3, lineHeight: 16.88, letterSpacing: 0.84 },
   smallCapsMuted: { fontFamily: fonts.medium, fontSize: 12.05, lineHeight: 16.88 },
   floatLabel: { fontFamily: fonts.regular, fontSize: 12.3, lineHeight: 14.56, paddingHorizontal: 12.25, letterSpacing: -0.06 },
   edgeLabel: { fontFamily: fonts.regular, fontSize: 11.96, lineHeight: 16, paddingHorizontal: 4.2 },
-  fieldValue: { fontFamily: fonts.regular, fontSize: 16.88, lineHeight: 22.68 },
+  fieldValue: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 22.68 },
   nameInput: serif(17.53, 22.8),
-  toggleTitle: { fontFamily: fonts.regular, fontSize: 15.51, lineHeight: 21.1 },
-  toggleCaption: { fontFamily: fonts.regular, fontSize: 13.5, lineHeight: 16.88 },
-  notes: { fontFamily: fonts.medium, fontSize: 15.09, lineHeight: 18.99 },
-  pickerTitle: { fontFamily: fonts.medium, fontSize: 25.32, lineHeight: 34.81 },
-  quickCreateInput: { fontFamily: fonts.regular, fontSize: 17.93, lineHeight: 21.1 },
-  chipLabel: { fontFamily: fonts.medium, fontSize: 13.71, lineHeight: 15.82, letterSpacing: 0.4 },
-  calendarSelect: { fontFamily: fonts.medium, fontSize: 13.71, lineHeight: 16.88 },
+  toggleTitle: { fontFamily: fonts.regular, fontSize: 14.7, lineHeight: 21.1 },
+  toggleCaption: { fontFamily: fonts.regular, fontSize: 12.8, lineHeight: 16.88 },
+  notes: { fontFamily: fonts.medium, fontSize: 14.3, lineHeight: 18.99 },
+  pickerTitle: { fontFamily: fonts.medium, fontSize: 24, lineHeight: 34.81 },
+  quickCreateInput: serif(18, 21.1),
+  chipLabel: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 15.82, letterSpacing: 0.4 },
+  calendarSelect: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 16.88 },
   calendarDate: { fontFamily: fonts.serif, fontSize: 21.6, lineHeight: 31.35, letterSpacing: -0.30 },
-  calendarMonth: { fontFamily: fonts.medium, fontSize: 15.82, lineHeight: 21.1, letterSpacing: 0.21 },
-  calendarWeekday: { fontFamily: fonts.medium, fontSize: 12.66, lineHeight: 16.88 },
-  calendarDay: { fontFamily: fonts.regular, fontSize: 15.82, lineHeight: 21.1 },
+  calendarMonth: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 21.1, letterSpacing: 0.21 },
+  calendarWeekday: { fontFamily: fonts.medium, fontSize: 12, lineHeight: 16.88 },
+  calendarDay: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 21.1 },
 } as const;
 
 export const space = {
@@ -169,6 +176,14 @@ export const space = {
   quickCreateGlyph: 14,
   quickCreateRepeatGlyph: 13,
   quickCreateRadius: 34.5,
+  quickCreateSubmitLeft: 346.1,
+  quickCreateSubmitTop: 67.7,
+  quickCreateSubmitSize: 29.8,
+  quickCreateSubmitGlyph: 18.2,
+  quickCreateChipLeft: 345,
+  quickCreateChipTop: 22.9,
+  quickCreateChipSize: 32,
+  quickCreateBadgeSize: 13.1,
   navHeight: 57,
   navBottom: 16,
 } as const;

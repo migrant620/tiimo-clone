@@ -101,7 +101,7 @@ export function CalendarPicker({
               key={iso}
               accessibilityRole="button"
               accessibilityLabel={String(day)}
-              accessibilityState={{ selected: selectedDay }}
+              aria-selected={selectedDay}
               onPress={() => setSelected(iso)}
               style={[
                 styles.dayCell,

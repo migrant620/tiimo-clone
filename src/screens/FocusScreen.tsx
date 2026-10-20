@@ -48,7 +48,7 @@ export function FocusScreen({ task, timer, onToggleTimer, onRingPress, onCreateT
           started !== null ? (
             <View style={styles.timeRow}>
               <Text style={styles.time}>{clock(started)}</Text>
-              <Icon name="arrowRight" size={8.7} color={colors.ink} />
+              <Icon name="arrowRight" size={7.9} lineHeight={8.7} color={colors.ink} />
               <Text style={styles.time}>{clock(started + totalSec * 1000)}</Text>
             </View>
           ) : null

@@ -47,7 +47,9 @@ export function ActionMenuSheet({
             return (
               <Pressable
                 key={row}
-                accessibilityLabel={implemented ? row : `${row} (not implemented)`}
+                accessibilityRole="button"
+                accessibilityLabel={row}
+                disabled={!implemented}
                 onPress={() => onSelect(row)}
                 style={[styles.menuRow, row === 'Suggest breakdown' && styles.menuRowShort]}
               >

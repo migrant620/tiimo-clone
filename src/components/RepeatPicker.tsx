@@ -26,7 +26,7 @@ export function RepeatPicker({
             key={option}
             accessibilityRole="radio"
             accessibilityLabel={`Repeat ${option}`}
-            accessibilityState={{ checked: option === value }}
+            aria-checked={option === value}
             onPress={() => onSelect(option)}
             style={styles.repeatRow}
           >

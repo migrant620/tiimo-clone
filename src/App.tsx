@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,7 +22,7 @@ import type { ActionMenuRow, Tab, Task, TimeOfDay } from './model';
 type Overlay =
   | { kind: 'menu'; task: Task }
   | { kind: 'quickCreate'; section: TimeOfDay }
-  | { kind: 'create'; section: TimeOfDay }
+  | { kind: 'create'; section: TimeOfDay; draft?: Partial<Task> }
   | { kind: 'edit'; task: Task }
   | { kind: 'delete'; task: Task }
   | { kind: 'reschedule'; task: Task };
@@ -131,7 +131,7 @@ function Shell() {
           <View style={styles.cover} role="dialog" aria-modal>
             <UpdateTaskScreen
               heading="New task"
-              task={{ ...NEW_TASK, timeOfDay: overlay.section, date: isoOf(now) }}
+              task={{ ...NEW_TASK, timeOfDay: overlay.section, date: isoOf(now), ...overlay.draft }}
               onSubmit={(patch) => {
                 state.createTask(
                   patch.title ?? '',
@@ -178,6 +178,9 @@ function Shell() {
             state.createTask(title, durationMin, timeOfDay, repeat);
             close();
           }}
+          onMore={(title, durationMin, timeOfDay, repeat) =>
+            setOverlay({ kind: 'create', section: timeOfDay, draft: { title, durationMin, timeOfDay, repeat } })
+          }
         />
       ) : null}
       {overlay?.kind === 'menu' ? (
@@ -206,9 +209,24 @@ function Shell() {
   );
 }
 
+if (Platform.OS === 'web' && typeof document !== 'undefined' && !document.getElementById('grayscale-text')) {
+  const style = document.createElement('style');
+  style.id = 'grayscale-text';
+  style.textContent = '#root > div, [aria-modal="true"] { will-change: transform; }';
+  document.head.appendChild(style);
+}
+
+const FONT_GRACE_MS = 1200;
+
 export default function App() {
   const [fontsLoaded, fontError] = useFonts(fontFiles);
-  if (!fontsLoaded && !fontError) return null;
+  const [fontGraceOver, setFontGraceOver] = React.useState(false);
+  React.useEffect(() => {
+    if (fontsLoaded || fontError) return undefined;
+    const t = setTimeout(() => setFontGraceOver(true), FONT_GRACE_MS);
+    return () => clearTimeout(t);
+  }, [fontsLoaded, fontError]);
+  if (!fontsLoaded && !fontError && !fontGraceOver) return null;
   return (
     <SafeAreaProvider>
       <Shell />
