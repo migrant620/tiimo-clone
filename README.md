@@ -1,11 +1,11 @@
 <p align="center">
-  <a href="https://tiimo-ui.edgeone.cool"><img src="docs/demo.gif" width="280" alt="Adding a task, starting focus and watching the progress arc travel round the ring, then ticking the task off"></a>
+  <a href="https://migrant620.github.io/tiimo/"><img src="docs/demo.gif" width="280" alt="Adding a task, starting focus and watching the progress arc travel round the ring, then ticking the task off"></a>
 </p>
 
 <h1 align="center">Tiimo UI</h1>
 
 <p align="center">
-  <a href="https://tiimo-ui.edgeone.cool"><img src="https://img.shields.io/badge/%E2%96%B6%20Live%20demo-tiimo--ui.edgeone.cool-9F85FF?style=for-the-badge" alt="Live demo"></a>
+  <a href="https://migrant620.github.io/tiimo/"><img src="https://img.shields.io/badge/%E2%96%B6%20Live%20demo-migrant620.github.io%2Ftiimo-9F85FF?style=for-the-badge" alt="Live demo"></a>
 </p>
 
 <p align="center">
@@ -81,7 +81,7 @@ The static output is written to `dist/`. Serve that directory over HTTP or HTTPS
 
 ## Demo build
 
-The published demo at <https://tiimo-ui.edgeone.cool> is built from this repository. It was last rebuilt and redeployed on 2026-10-19 (EdgeOne deployment `dp5d13it0un3`, source revision `a9e695b7`).
+The published demo at <https://migrant620.github.io/tiimo/> is built from this repository. It was last rebuilt and redeployed on 2026-10-20 (GitHub Pages commit `0dd8495e`, source revision `b1f25b8c`).
 
 ## Scope and limitations
 
