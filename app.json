@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "Tiimo UI Prototype",
-    "slug": "tiimo-ui",
-    "scheme": "tiimo-ui",
+    "slug": "tiimo-clone",
+    "scheme": "tiimo-clone",
     "version": "0.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
