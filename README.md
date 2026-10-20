@@ -2,14 +2,14 @@
   <a href="https://migrant620.github.io/tiimo/"><img src="docs/demo.gif" width="280" alt="Adding a task, starting focus and watching the progress arc travel round the ring, then ticking the task off"></a>
 </p>
 
-<h1 align="center">Tiimo UI</h1>
+<h1 align="center">Tiimo Clone</h1>
 
 <p align="center">
   <a href="https://migrant620.github.io/tiimo/"><img src="https://img.shields.io/badge/%E2%96%B6%20Live%20demo-migrant620.github.io%2Ftiimo-9F85FF?style=for-the-badge" alt="Live demo"></a>
 </p>
 
 <p align="center">
-  A high-fidelity, interactive recreation of Tiimo's visual planner — real components, real state, running in your browser.<br>
+  A Tiimo clone in React Native + Expo: a high-fidelity, interactive recreation of Tiimo's visual planner — real components, real state, running in your browser.<br>
   <a href="DESIGN.md">DESIGN.md</a> · <a href="#design-notes">Design notes</a> · <a href="#explore-the-prototype">Explore</a> · <a href="#run-locally">Run locally</a> · <a href="#scope-and-limitations">Scope</a> · <a href="https://github.com/migrant620/awesome-app-design-md">More apps →</a>
 </p>
 
@@ -81,7 +81,7 @@ The static output is written to `dist/`. Serve that directory over HTTP or HTTPS
 
 ## Demo build
 
-The published demo at <https://migrant620.github.io/tiimo/> is built from this repository. It was last rebuilt and redeployed on 2026-10-20 (GitHub Pages commit `0dd8495e`, source revision `b1f25b8c`).
+The published demo at <https://migrant620.github.io/tiimo/> is built from this repository. It was last rebuilt and redeployed on 2026-10-20 (GitHub Pages commit `0dd8495e`, source revision `87e1c07d`).
 
 ## Scope and limitations
 
@@ -95,7 +95,7 @@ The published demo at <https://migrant620.github.io/tiimo/> is built from this r
 
 ## Commission a prototype
 
-Have an app whose screens you want to put in front of your team, a client or investors? I recreate chosen app interfaces and flows as high-fidelity, interactive prototypes and hand over the source code. [Open an issue](https://github.com/migrant620/tiimo-ui/issues/new?title=Prototype%20enquiry) with the app, the flow you need and your timeline.
+Have an app whose screens you want to put in front of your team, a client or investors? I recreate chosen app interfaces and flows as high-fidelity, interactive prototypes and hand over the source code. [Open an issue](https://github.com/migrant620/tiimo-clone/issues/new?title=Prototype%20enquiry) with the app, the flow you need and your timeline.
 
 ## License
 
