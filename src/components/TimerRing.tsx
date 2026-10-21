@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { Icon } from './Icon';
 import { colors, focus } from '../tokens';
+import { emojiFamily } from '../emojiFont';
 
 const SIZE = focus.ringOuter * 2;
 const BAND = focus.ringOuter - focus.ringDisc;
@@ -81,6 +82,6 @@ const styles = StyleSheet.create({
   },
   canvas: { position: 'absolute', left: -PAD, top: -PAD },
   markerSlot: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
-  marker: { fontSize: 74.6, lineHeight: 93.5 },
+  marker: { fontFamily: emojiFamily, fontSize: 70.1, lineHeight: 93.5, top: 0.75 },
   arrow: { position: 'absolute', width: focus.arrowSize, height: focus.arrowSize, alignItems: 'center', justifyContent: 'center' },
 });

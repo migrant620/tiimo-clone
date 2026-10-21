@@ -10,6 +10,7 @@ import { colors, form, frame, lift, type as typo } from '../tokens';
 import { DEFAULT_REPEAT, REPEAT_OPTIONS } from '../model';
 import type { RepeatOption, Task, TimeOfDay } from '../model';
 import { dateLabel, fromIso } from '../date';
+import { emojiFamily } from '../emojiFont';
 
 const TIME_OPTIONS: { value: TimeOfDay; label: string }[] = [
   { value: 'anytime', label: 'Anytime' },
@@ -338,7 +339,7 @@ const styles = StyleSheet.create({
   edgeLabel: { ...typo.edgeLabel, color: colors.ink },
   nameInput: { ...typo.nameInput, color: colors.ink, paddingLeft: form.nameInset, outlineStyle: 'none' } as object,
   chip: { borderRadius: 20, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
-  chipGlyph: { fontSize: 21, lineHeight: 26.9, top: 0.3 },
+  chipGlyph: { fontFamily: emojiFamily, fontSize: 19.8, lineHeight: 26.9, top: 1.0 },
   chipLock: { borderRadius: 8, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center' },
   row: { flexDirection: 'row', alignItems: 'center' },
   rowIcon: { position: 'absolute', left: form.rowIconLeft },

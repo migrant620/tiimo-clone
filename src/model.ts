@@ -91,12 +91,19 @@ export const ACTION_MENU_ROWS = [
   'Delete task',
 ] as const;
 
-export type ActionMenuRow = (typeof ACTION_MENU_ROWS)[number];
+export type ActionMenuRow = (typeof ACTION_MENU_ROWS)[number] | 'Reschedule for today';
+
+export function menuRowsFor(taskDate: string, todayIso: string): ActionMenuRow[] {
+  return ACTION_MENU_ROWS.map((row) =>
+    row === 'Reschedule for tomorrow' && taskDate !== todayIso ? 'Reschedule for today' : row,
+  );
+}
 
 export const IMPLEMENTED_ROWS: ActionMenuRow[] = [
   'Make a copy',
   'Reschedule task',
   'Reschedule for tomorrow',
+  'Reschedule for today',
   'Start task',
   'Edit task',
   'Delete task',

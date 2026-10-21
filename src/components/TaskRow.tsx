@@ -5,6 +5,7 @@ import { Icon } from './Icon';
 import { colors, space, type as typo } from '../tokens';
 import { PLACEHOLDER_COPY } from '../model';
 import type { Task, TimeOfDay } from '../model';
+import { emojiFamily } from '../emojiFont';
 
 function TaskRowImpl({
   task,
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chipGlyph: { fontSize: 15.2, lineHeight: 19.3 },
+  chipGlyph: { fontFamily: emojiFamily, fontSize: 14.3, lineHeight: 19.3 },
   text: { flexShrink: 1, marginLeft: 8, justifyContent: 'center' },
   title: { ...typo.taskTitle, color: colors.ink },
   caption: { ...typo.caption, color: colors.ink },

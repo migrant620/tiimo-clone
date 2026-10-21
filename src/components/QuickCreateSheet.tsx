@@ -6,6 +6,7 @@ import { RepeatPicker } from './RepeatPicker';
 import { colors, space, type as typo } from '../tokens';
 import { DEFAULT_MARKER, DEFAULT_REPEAT } from '../model';
 import type { RepeatOption, TimeOfDay } from '../model';
+import { emojiFamily } from '../emojiFont';
 
 const scrim = 'rgba(0, 0, 0, 0.30)';
 
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  markerGlyph: { fontSize: 15.2, lineHeight: 20.7 },
+  markerGlyph: { fontFamily: emojiFamily, fontSize: 15.2, lineHeight: 20.7 },
   markerBadge: {
     position: 'absolute',
     right: 8 - space.quickCreateBadgeSize / 2,
