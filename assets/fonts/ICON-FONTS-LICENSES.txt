@@ -1,9 +1,12 @@
 Icon fonts, copied from @expo/vector-icons 15.0.2 (MIT).
 
-MaterialCommunityIcons.ttf  Pictogrammers Material Design Icons - Apache License 2.0
-Feather.ttf                 Feather by Cole Bemis - MIT License
-AntDesign.ttf               Ant Design Icons - MIT License
-FontAwesome.ttf             Font Awesome 4.7 by Dave Gandy - SIL OFL 1.1 (font)
+MaterialCommunityIcons-Subset.ttf
+                            Pictogrammers Material Design Icons - Apache License 2.0.
+                            Subset of @expo/vector-icons 15.0.2 MaterialCommunityIcons.ttf to the
+                            glyphs this app draws; glyph outlines are unmodified.
+Feather-Subset.ttf          Feather by Cole Bemis - MIT License.
+                            Subset of @expo/vector-icons 15.0.2 Feather.ttf to the glyphs this app
+                            draws; glyph outlines are unmodified.
 Entypo-Plus.ttf             Entypo pictograms by Daniel Bruce (www.entypo.com) - CC BY-SA 4.0.
                             Subset of @expo/vector-icons 15.0.2 Entypo.ttf to the single glyph U+F21A;
                             the subset is shared under the same CC BY-SA 4.0 licence.

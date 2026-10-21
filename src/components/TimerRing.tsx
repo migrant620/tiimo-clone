@@ -6,6 +6,8 @@ import { colors, focus } from '../tokens';
 
 const SIZE = focus.ringOuter * 2;
 const BAND = focus.ringOuter - focus.ringDisc;
+const PAD = 2;
+const CANVAS = SIZE + PAD * 2;
 
 interface Props {
   discColor?: string;
@@ -15,7 +17,7 @@ interface Props {
 }
 
 function arcPath(angle: number) {
-  const c = SIZE / 2;
+  const c = CANVAS / 2;
   const r = focus.badgeRadius;
   const rad = (Math.min(angle, 359.9) * Math.PI) / 180;
   const x = c + r * Math.sin(rad);
@@ -30,6 +32,7 @@ export function TimerRing({ discColor = colors.discDefault, marker, elapsedSec =
     x: SIZE / 2 + focus.badgeRadius * Math.sin(rad),
     y: SIZE / 2 - focus.badgeRadius * Math.cos(rad),
   };
+  const svgHead = { x: head.x + PAD, y: head.y + PAD };
   const glyphPos = {
     left: head.x - focus.arrowSize / 2,
     top: head.y - focus.arrowSize / 2,
@@ -37,10 +40,10 @@ export function TimerRing({ discColor = colors.discDefault, marker, elapsedSec =
   };
   return (
     <View style={styles.wrap}>
-      <Svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
+      <Svg width={CANVAS} height={CANVAS} viewBox={`0 0 ${CANVAS} ${CANVAS}`} style={styles.canvas}>
         <Circle
-          cx={SIZE / 2}
-          cy={SIZE / 2}
+          cx={CANVAS / 2}
+          cy={CANVAS / 2}
           r={(focus.ringOuter + focus.ringDisc) / 2}
           fill="none"
           stroke={colors.aura}
@@ -50,10 +53,10 @@ export function TimerRing({ discColor = colors.discDefault, marker, elapsedSec =
           angle > 0.05 ? (
             <Path d={arcPath(angle)} stroke={colors.primary} strokeWidth={focus.arcWidth} strokeLinecap="round" fill="none" />
           ) : (
-            <Circle cx={head.x} cy={head.y} r={focus.arcWidth / 2} fill={colors.primary} />
+            <Circle cx={svgHead.x} cy={svgHead.y} r={focus.arcWidth / 2} fill={colors.primary} />
           )
         ) : null}
-        <Circle cx={SIZE / 2} cy={SIZE / 2} r={focus.ringDisc} fill={discColor} />
+        <Circle cx={CANVAS / 2} cy={CANVAS / 2} r={focus.ringDisc} fill={discColor} />
       </Svg>
       {marker ? (
         <View style={styles.markerSlot} pointerEvents="none">
@@ -76,6 +79,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  canvas: { position: 'absolute', left: -PAD, top: -PAD },
   markerSlot: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
   marker: { fontSize: 74.6, lineHeight: 93.5 },
   arrow: { position: 'absolute', width: focus.arrowSize, height: focus.arrowSize, alignItems: 'center', justifyContent: 'center' },

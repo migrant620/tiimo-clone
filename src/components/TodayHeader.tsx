@@ -8,16 +8,23 @@ import { colors, frame, lift, space, type as typo } from '../tokens';
 export function TodayHeader({
   onAdd,
   onSettings,
+  onToday,
   menuGlyph = 'cog',
   menuLabel = 'Settings',
 }: {
   onAdd: () => void;
   onSettings?: () => void;
+  onToday?: () => void;
   menuGlyph?: GlyphName;
   menuLabel?: string;
 }) {
   return (
     <View style={styles.row}>
+      {onToday ? (
+        <Pressable accessibilityRole="button" accessibilityLabel="Today" onPress={onToday} style={styles.todayPill}>
+          <Text style={styles.proLabel}>Today</Text>
+        </Pressable>
+      ) : null}
       <Pressable accessibilityLabel="Get Pro" onPress={() => undefined} style={styles.proPill}>
         <Text style={styles.proLabel}>GET PRO</Text>
         <SparkleGlyph size={18} color={colors.primary} />
@@ -57,6 +64,16 @@ const styles = StyleSheet.create({
     ...lift,
   },
   proLabel: { ...typo.button, color: colors.ink },
+  todayPill: {
+    position: 'absolute',
+    left: 16,
+    height: CIRCLE,
+    borderRadius: CIRCLE / 2,
+    backgroundColor: colors.card,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    ...lift,
+  },
   controls: {
     position: 'absolute',
     right: 16,

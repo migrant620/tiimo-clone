@@ -21,6 +21,7 @@ export const GLYPH = {
   clock: ['MDI', 0xf0150],
   arrowDown: ['MDI', 0xf0045],
   arrowUp: ['MDI', 0xf005d],
+  arrowRightMdi: ['MDI', 0xf0054],
   dotsVertical: ['MDI', 0xf01d9],
   priorityTriangle: ['MDI', 0xf0536],
   priorityDot: ['MDI', 0xf0765],

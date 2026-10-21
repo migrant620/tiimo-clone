@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SparkleGlyph } from '../components/Glyphs';
 import { Icon } from '../components/Icon';
 import { TimerRing } from '../components/TimerRing';
@@ -28,14 +28,14 @@ export function FocusScreen({ task, timer, onToggleTimer, onRingPress, onCreateT
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.page} showsVerticalScrollIndicator={false}>
-      <View style={[styles.proWrap, !task && styles.proWrapEmpty]}>
+      <View style={styles.proBand} {...fadeProps(task !== null)}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Get Pro"
           onPress={() => undefined}
-          style={[styles.proPill, task ? styles.proPillQuiet : null]}
+          style={[styles.proPill, task ? styles.proPillTask : styles.proPillEmpty]}
         >
-          <Text style={[styles.proLabel, task ? styles.proLabelQuiet : null]}>GET PRO</Text>
+          <Text style={styles.proLabel}>GET PRO</Text>
           <SparkleGlyph size={15} color={colors.primary} />
         </Pressable>
       </View>
@@ -69,7 +69,7 @@ export function FocusScreen({ task, timer, onToggleTimer, onRingPress, onCreateT
         <Pressable accessibilityRole="button" accessibilityLabel="Timer disc; opens the update task form" onPress={onRingPress} style={styles.disc} />
       ) : null}
 
-      <Text style={styles.digits}>{countdown(timer.remainingSec)}</Text>
+      <Text style={[styles.digits, task ? styles.digitsTask : styles.digitsEmpty]}>{countdown(timer.remainingSec)}</Text>
 
       {task ? (
         <Pressable
@@ -89,11 +89,25 @@ export function FocusScreen({ task, timer, onToggleTimer, onRingPress, onCreateT
   );
 }
 
+const FADE_RULE_ID = 'focus-top-fade';
+if (Platform.OS === 'web' && typeof document !== 'undefined' && !document.getElementById(FADE_RULE_ID)) {
+  const rule = document.createElement('style');
+  rule.id = FADE_RULE_ID;
+  const mask = `linear-gradient(to bottom, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 1) ${focus.topFade}px)`;
+  rule.textContent = `[data-focus-fade="on"] { -webkit-mask-image: ${mask}; mask-image: ${mask}; }`;
+  document.head.appendChild(rule);
+}
+
+function fadeProps(on: boolean): object {
+  return { dataSet: { focusFade: on ? 'on' : 'off' } };
+}
+
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: colors.surface },
   page: { flexGrow: 1, minHeight: focus.contentMin, alignItems: 'center' },
-  proWrap: { marginTop: 16, height: 40, justifyContent: 'center' },
-  proWrapEmpty: { marginTop: -4 },
+  proBand: { position: 'absolute', top: 0, left: 0, right: 0, height: focus.topFade + 8, alignItems: 'center' },
+  proPillTask: { marginTop: 16 },
+  proPillEmpty: { marginTop: -4 },
   proPill: {
     height: 40,
     width: 117.9,
@@ -105,9 +119,7 @@ const styles = StyleSheet.create({
     gap: 8,
     ...lift,
   },
-  proPillQuiet: { shadowOpacity: 0.04 },
   proLabel: { ...typo.button, color: colors.ink },
-  proLabelQuiet: { color: colors.quietInk },
   heading: { position: 'absolute', top: 108.25, alignItems: 'stretch' },
   headingTask: { top: 109.15 },
   headingEmpty: { top: 107.65 },
@@ -124,7 +136,10 @@ const styles = StyleSheet.create({
     height: focus.ringDisc * 2,
     borderRadius: focus.ringDisc,
   },
-  digits: { ...typo.timerDigits, color: colors.ink, position: 'absolute', top: focus.digitsTop },
+  digits: { ...typo.timerDigits, color: colors.ink, position: 'absolute' },
+  digitsTask: { top: focus.digitsTopTask },
+  digitsEmpty: { top: focus.digitsTopEmpty },
+
   circleButton: {
     position: 'absolute',
     top: focus.buttonTop,

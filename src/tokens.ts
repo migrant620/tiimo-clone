@@ -10,6 +10,7 @@ export const colors = {
   ink: '#111717',
   inkHeading: '#161412',
   muted: '#A7A7A7',
+  selectedDayInk: '#363636',
   primary: '#9F85FF',
   anytimePill: '#F6F5F4',
   morningPill: '#FFF2ED',
@@ -35,7 +36,6 @@ export const colors = {
   lockInk: '#494745',
   badgeArrow: 'rgba(255, 255, 255, 0.6)',
   dangerIcon: '#D34D4B',
-  quietInk: '#5E6262',
   aura: '#F4F1FD',
   discDefault: '#FAEFE0',
   discBlue: '#95C8DB',
@@ -49,8 +49,9 @@ export const fontFiles = {
   'Roboto-500': { uri: require('../assets/fonts/Roboto_500Medium.ttf'), display: FontDisplay.SWAP },
   'Roboto-700': { uri: require('../assets/fonts/Roboto_700Bold.ttf'), display: FontDisplay.SWAP },
   'Fraunces-400': { uri: require('../assets/fonts/Fraunces_400Regular.ttf'), display: FontDisplay.SWAP },
-  MDI: { uri: require('../assets/fonts/MaterialCommunityIcons.ttf'), display: FontDisplay.SWAP },
-  Feather: { uri: require('../assets/fonts/Feather.ttf'), display: FontDisplay.SWAP },
+  'Fraunces-500': { uri: require('../assets/fonts/Fraunces_500Medium.ttf'), display: FontDisplay.SWAP },
+  MDI: { uri: require('../assets/fonts/MaterialCommunityIcons-Subset.ttf'), display: FontDisplay.SWAP },
+  Feather: { uri: require('../assets/fonts/Feather-Subset.ttf'), display: FontDisplay.SWAP },
   Entypo: { uri: require('../assets/fonts/Entypo-Plus.ttf'), display: FontDisplay.SWAP },
   FA6Solid: { uri: require('../assets/fonts/FontAwesome6Solid-ArrowRight.ttf'), display: FontDisplay.SWAP },
 };
@@ -64,6 +65,7 @@ export const fonts = {
   medium: withFallback('Roboto-500', SANS_FALLBACK),
   bold: withFallback('Roboto-700', SANS_FALLBACK),
   serif: withFallback('Fraunces-400', SERIF_FALLBACK),
+  serifMedium: withFallback('Fraunces-500', SERIF_FALLBACK),
 } as const;
 
 const SERIF_SCALE = 5.176 / 5.459;
@@ -73,8 +75,18 @@ const serif = (recoletaSize: number, lineHeight: number) => ({
   lineHeight,
 });
 
+const SERIF_MEDIUM_SCALE = 5.176 / 5.48;
+const serifMedium = (recoletaSize: number, lineHeight: number) => ({
+  fontFamily: fonts.serifMedium,
+  fontSize: Math.round(recoletaSize * SERIF_MEDIUM_SCALE * 10) / 10,
+  lineHeight,
+});
+
 export const type = {
-  dateTitle: serif(28, 36),
+  dateTitle: serifMedium(28, 36),
+  accountTitle: serif(32, 40),
+  profileTitle: { fontFamily: fonts.serif, fontSize: 22.25, lineHeight: 32.8 },
+  notifyTitle: { fontFamily: fonts.serifMedium, fontSize: 30.4, lineHeight: 44 },
   monthCaption: { fontFamily: fonts.medium, fontSize: 12.3, lineHeight: 16.88, letterSpacing: 0.33 },
   section: { fontFamily: fonts.medium, fontSize: 12.3, lineHeight: 16.88, letterSpacing: 0.86 },
   placeholder: { fontFamily: fonts.regular, fontSize: 13.15, lineHeight: 16.88 },
@@ -87,7 +99,7 @@ export const type = {
   fieldLabel: { fontFamily: fonts.regular, fontSize: 13.6, lineHeight: 16.88 },
   heading: { fontFamily: fonts.medium, fontSize: 16.3, lineHeight: 25.32 },
   subtitle: { fontFamily: fonts.regular, fontSize: 16.39, lineHeight: 25.32 },
-  focusTitle: serif(28, 36),
+  focusTitle: { fontFamily: fonts.serifMedium, fontSize: 26.2, lineHeight: 36 },
   dialogTitle: { fontFamily: fonts.serif, fontSize: 21.47, lineHeight: 31.16 },
   timerDigits: { fontFamily: fonts.serif, fontSize: 46, lineHeight: 53 },
   timeRange: { fontFamily: fonts.regular, fontSize: 16.15, lineHeight: 21.1 },
@@ -100,7 +112,7 @@ export const type = {
   fieldValue: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 22.68 },
   nameInput: serif(17.53, 22.8),
   toggleTitle: { fontFamily: fonts.regular, fontSize: 14.7, lineHeight: 21.1 },
-  toggleCaption: { fontFamily: fonts.regular, fontSize: 12.8, lineHeight: 16.88 },
+  toggleCaption: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 16.88, letterSpacing: 0.4 },
   notes: { fontFamily: fonts.medium, fontSize: 14.3, lineHeight: 18.99 },
   pickerTitle: { fontFamily: fonts.medium, fontSize: 24, lineHeight: 34.81 },
   quickCreateInput: serif(18, 21.1),
@@ -203,15 +215,28 @@ export const nav = {
   avatarRight: 17.9,
 } as const;
 
+export const account = {
+  darkFill: '#161212',
+  idleFill: '#E0E0E1',
+  idleInk: '#969597',
+  profileBackdrop: '#F8F8F8',
+  cardRadius: 26,
+  optionRadius: 27,
+  signUpBottom: 29.5,
+  notifyBottom: 24,
+} as const;
+
 export const focus = {
   ringOuter: 121,
   ringDisc: 87.6,
   ringCenterX: 196.9,
   ringCenterY: 303.3,
-  arcWidth: 35.3,
+  arcWidth: 34.3,
   badgeRadius: 104.4,
   arrowSize: 18.6,
-  digitsTop: 441.6,
+  digitsTopTask: 440.2,
+  digitsTopEmpty: 442.0,
+  topFade: 59.8,
   buttonTop: 508.7,
   pillTop: 510.5,
   buttonHeight: 40,
@@ -328,7 +353,6 @@ export const themes = {
     cancelFill: '#3A383F',
     dangerFill: '#4A2E33',
     danger: '#C97A7C',
-    quietInk: '#9A97A0',
     badgeArrow: 'rgba(255, 255, 255, 0.6)',
   },
 } as const;

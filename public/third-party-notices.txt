@@ -4,11 +4,11 @@ This file covers the fonts bundled with the build. Notices for the JavaScript
 dependencies are generated and appended in the publication step.
 
 - Roboto — SIL Open Font License 1.1
-- Fraunces — SIL Open Font License 1.1
+- Fraunces (Regular, and a Medium instance of the Fraunces variable font) — SIL Open Font License 1.1
 - Material Design Icons (Pictogrammers) — Apache License 2.0
 - Feather — MIT License
-- Ant Design Icons — MIT License
-- Font Awesome 4.7 (font) — SIL Open Font License 1.1
+- Entypo — CC BY-SA 4.0
+- Font Awesome 6 Free (font) — SIL Open Font License 1.1; icon — CC BY 4.0
 - Icon font packaging: @expo/vector-icons — MIT License
 
 ==================== Roboto-OFL.txt ====================
@@ -204,10 +204,20 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 ==================== ICON-FONTS-LICENSES.txt ====================
 Icon fonts, copied from @expo/vector-icons 15.0.2 (MIT).
 
-MaterialCommunityIcons.ttf  Pictogrammers Material Design Icons - Apache License 2.0
-Feather.ttf                 Feather by Cole Bemis - MIT License
-AntDesign.ttf               Ant Design Icons - MIT License
-FontAwesome.ttf             Font Awesome 4.7 by Dave Gandy - SIL OFL 1.1 (font)
+MaterialCommunityIcons-Subset.ttf
+                            Pictogrammers Material Design Icons - Apache License 2.0.
+                            Subset of @expo/vector-icons 15.0.2 MaterialCommunityIcons.ttf to the
+                            glyphs this app draws; glyph outlines are unmodified.
+Feather-Subset.ttf          Feather by Cole Bemis - MIT License.
+                            Subset of @expo/vector-icons 15.0.2 Feather.ttf to the glyphs this app
+                            draws; glyph outlines are unmodified.
+Entypo-Plus.ttf             Entypo pictograms by Daniel Bruce (www.entypo.com) - CC BY-SA 4.0.
+                            Subset of @expo/vector-icons 15.0.2 Entypo.ttf to the single glyph U+F21A;
+                            the subset is shared under the same CC BY-SA 4.0 licence.
+FontAwesome6Solid-ArrowRight.ttf
+                            Font Awesome 6 Free Solid 6.6.0 by Fonticons, Inc. - font SIL OFL 1.1,
+                            icon CC BY 4.0. Subset of @expo/vector-icons 15.0.2 FontAwesome6_Solid.ttf
+                            to the single glyph U+F061.
 
 ==================== expo-vector-icons-LICENSE.txt ====================
 The MIT License (MIT)

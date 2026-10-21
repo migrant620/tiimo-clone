@@ -6,7 +6,7 @@ import { PlaceholderRow, TaskRow } from '../components/TaskRow';
 import { TodayHeader } from '../components/TodayHeader';
 import { colors, space } from '../tokens';
 import { SECTION_LABEL, SECTION_ORDER } from '../model';
-import { addDays, isoOf, startOfWeek } from '../date';
+import { addDays, fromIso, isoOf, startOfWeek } from '../date';
 import type { Task, TimeOfDay } from '../model';
 
 interface Props {
@@ -25,13 +25,26 @@ export function TodayScreen({ now, tasks, onOpenMenu, onToggleComplete, onQuickA
   const toggle = (key: string) => setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const weekStart = React.useMemo(() => addDays(startOfWeek(now), weekShift * 7), [now, weekShift]);
+  const todayIso = isoOf(now);
+  const shiftWeek = (delta: number) => {
+    setWeekShift((value) => value + delta);
+    setSelectedIso((iso) => isoOf(addDays(fromIso(iso), delta * 7)));
+  };
+  const backToToday = () => {
+    setWeekShift(0);
+    setSelectedIso(todayIso);
+  };
   const dayTasks = tasks.filter((task) => task.date === selectedIso);
   const activeOf = (section: TimeOfDay) => dayTasks.filter((task) => !task.done && task.timeOfDay === section);
   const done = dayTasks.filter((task) => task.done);
 
   return (
     <View style={styles.page}>
-      <TodayHeader onAdd={() => onQuickAdd('anytime')} onSettings={onSettings} />
+      <TodayHeader
+        onAdd={() => onQuickAdd('anytime')}
+        onSettings={onSettings}
+        onToday={selectedIso === todayIso ? undefined : backToToday}
+      />
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -41,7 +54,7 @@ export function TodayScreen({ now, tasks, onOpenMenu, onToggleComplete, onQuickA
           weekStart={weekStart}
           selectedIso={selectedIso}
           onSelect={setSelectedIso}
-          onWeekShift={(delta) => setWeekShift((value) => value + delta)}
+          onWeekShift={shiftWeek}
         />
 
         {SECTION_ORDER.map((section, index) => {

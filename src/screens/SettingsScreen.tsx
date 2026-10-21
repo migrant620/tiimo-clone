@@ -33,7 +33,7 @@ const GROUPS: Array<{ title: string; rows: Row[] }> = [
   },
 ];
 
-export function SettingsScreen() {
+export function SettingsScreen({ onSignIn }: { onSignIn: () => void }) {
   const [toggles, setToggles] = React.useState<Record<string, boolean>>({});
   const on = (key: string, fallback: boolean) => (key in toggles ? toggles[key] : fallback);
 
@@ -58,6 +58,8 @@ export function SettingsScreen() {
                   onPress={() => {
                     if ('toggle' in row) {
                       setToggles(prev => ({ ...prev, [row.key]: !on(row.key, row.on) }));
+                    } else if (row.key === 'signin') {
+                      onSignIn();
                     }
                   }}
                   style={[styles.row, index > 0 && styles.rowDivided]}
