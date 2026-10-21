@@ -49,8 +49,8 @@ export function DateHeader({ weekStart, selectedIso, onSelect, onWeekShift }: Pr
               onPress={() => onSelect(day.iso)}
               style={[styles.cell, selected && styles.cellSelected]}
             >
-              <Text style={[styles.letter, selected && styles.selectedInk]}>{day.letter}</Text>
-              <Text style={[styles.number, selected && styles.selectedInk]}>{day.date}</Text>
+              <Text style={[styles.letter, selected && (day.isToday ? styles.selectedInk : styles.selectedOtherInk)]}>{day.letter}</Text>
+              <Text style={[styles.number, selected && (day.isToday ? styles.selectedInk : styles.selectedOtherInk)]}>{day.date}</Text>
             </Pressable>
           );
         })}
@@ -81,4 +81,5 @@ const styles = StyleSheet.create({
   letter: { ...typo.weekdayLetter, color: colors.muted, left: -0.3 },
   number: { ...typo.weekdayNumber, color: colors.muted, marginTop: 2.5 },
   selectedInk: { color: colors.primary },
+  selectedOtherInk: { color: colors.selectedDayInk },
 });

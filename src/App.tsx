@@ -13,6 +13,7 @@ import { FocusScreen } from './screens/FocusScreen';
 import { TodoScreen } from './screens/TodoScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { AccountFlow } from './screens/AccountFlow';
 import { colors, fontFiles, frame } from './tokens';
 import { DEFAULT_MARKER, DEFAULT_REPEAT } from './model';
 import { addDays, fromIso, isoOf } from './date';
@@ -44,6 +45,8 @@ function Shell() {
   const [overlay, setOverlay] = React.useState<Overlay | null>(null);
   const [profileOpen, setProfileOpen] = React.useState(false);
   const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [accountOpen, setAccountOpen] = React.useState(false);
+  const [profileName, setProfileName] = React.useState<string | null>(null);
   const now = React.useMemo(() => new Date(), []);
 
   const close = () => setOverlay(null);
@@ -116,8 +119,8 @@ function Shell() {
         {!profileOpen && !settingsOpen && state.tab === 'todo' ? (
           <TodoScreen onQuickAdd={() => setOverlay({ kind: 'create', section: 'anytime' })} onSettings={openSettings} />
         ) : null}
-        {profileOpen ? <ProfileScreen /> : null}
-        {settingsOpen ? <SettingsScreen /> : null}
+        {profileOpen ? <ProfileScreen name={profileName} onSignIn={() => setAccountOpen(true)} /> : null}
+        {settingsOpen ? <SettingsScreen onSignIn={() => setAccountOpen(true)} /> : null}
         <BottomNav
           active={state.tab}
           onSelect={selectTab}
@@ -167,6 +170,17 @@ function Shell() {
               onDelete={() => setOverlay({ kind: 'delete', task: overlay.task })}
             />
           </View>
+        ) : null}
+        {accountOpen ? (
+          <AccountFlow
+            onClose={() => setAccountOpen(false)}
+            onDone={(name) => {
+              setAccountOpen(false);
+              setProfileName(name || null);
+              setSettingsOpen(false);
+              setProfileOpen(true);
+            }}
+          />
         ) : null}
       </View>
 

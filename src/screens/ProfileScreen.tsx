@@ -15,7 +15,12 @@ const SETTINGS_ROWS = [
   { key: 'pro', label: 'Tiimo Pro', glyph: 'pro' as const },
 ];
 
-export function ProfileScreen() {
+interface Props {
+  name: string | null;
+  onSignIn: () => void;
+}
+
+export function ProfileScreen({ name, onSignIn }: Props) {
   return (
     <View style={styles.page}>
       <ScrollView
@@ -29,13 +34,15 @@ export function ProfileScreen() {
           <View style={styles.avatarWell}>
             <Text style={styles.avatarInitial}>T</Text>
           </View>
-          <Text style={styles.name}>Signed out</Text>
-          <Text style={styles.caption}>Sign in to sync your lists across devices.</Text>
+          <Text style={styles.name}>{name ?? 'Signed out'}</Text>
+          {name ? null : <Text style={styles.caption}>Sign in to sync your lists across devices.</Text>}
         </View>
 
-        <Pressable accessibilityLabel="Sign in" onPress={() => undefined} style={styles.signIn}>
-          <Text style={styles.signInLabel}>Sign in</Text>
-        </Pressable>
+        {name ? null : (
+          <Pressable accessibilityRole="button" accessibilityLabel="Sign in" onPress={onSignIn} style={styles.signIn}>
+            <Text style={styles.signInLabel}>Sign in</Text>
+          </Pressable>
+        )}
 
         <View style={styles.stats}>
           {STATS.map((s, index) => (

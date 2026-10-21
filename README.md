@@ -81,7 +81,7 @@ The static output is written to `dist/`. Serve that directory over HTTP or HTTPS
 
 ## Demo build
 
-The published demo at <https://migrant620.github.io/tiimo/> is built from this repository. It was last rebuilt and redeployed on 2026-10-20 (GitHub Pages commit `b41d5131`).
+The published demo at <https://migrant620.github.io/tiimo/> is built from this repository. It was last rebuilt and redeployed on 2026-10-21 (GitHub Pages commit `b4d2e436`).
 
 ## Scope and limitations
 

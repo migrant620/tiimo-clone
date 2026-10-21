@@ -18,22 +18,24 @@ function CalendarSlot({ active }: { active: boolean }) {
   );
 }
 
+const AVATAR_INK = '#302828';
+
 function Avatar() {
   return (
     <Svg width={nav.avatarSize} height={nav.avatarSize} viewBox="2.5 2.5 44 44">
       <Defs>
-        <LinearGradient id="avatarFill" x1="0" y1="0.2" x2="1" y2="0.8">
-          <Stop offset="0" stopColor="#A78FFF" />
-          <Stop offset="1" stopColor="#D9D0FB" />
+        <LinearGradient id="avatarFill" gradientUnits="userSpaceOnUse" x1="19.15" y1="14.51" x2="34.17" y2="42.56">
+          <Stop offset="0" stopColor={colors.primary} />
+          <Stop offset="1" stopColor="#E4DDF8" />
         </LinearGradient>
       </Defs>
       <Circle cx="24.5" cy="24.5" r="24.5" fill="#FFFFFF" />
       <Circle cx="24.5" cy="24.5" r="21.5" fill="url(#avatarFill)" />
-      <Ellipse cx="18" cy="21" rx="3.4" ry="4.2" fill="#111717" />
-      <Ellipse cx="31" cy="21" rx="3.4" ry="4.2" fill="#111717" />
+      <Ellipse cx="18" cy="21" rx="3.4" ry="4.2" fill={AVATAR_INK} />
+      <Ellipse cx="31" cy="21" rx="3.4" ry="4.2" fill={AVATAR_INK} />
       <Ellipse cx="18.8" cy="20" rx="1.3" ry="1.6" fill="#FFFFFF" />
       <Ellipse cx="31.8" cy="20" rx="1.3" ry="1.6" fill="#FFFFFF" />
-      <Path d="M23 30.5c1.4 1.6 3.4 1.6 4.8 0" stroke="#111717" strokeWidth="1.6" strokeLinecap="round" fill="none" />
+      <Path d="M23 30.5c1.4 1.6 3.4 1.6 4.8 0" stroke={AVATAR_INK} strokeWidth="1.6" strokeLinecap="round" fill="none" />
     </Svg>
   );
 }
