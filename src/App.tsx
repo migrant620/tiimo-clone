@@ -4,21 +4,46 @@ import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomNav } from './components/BottomNav';
-import { ActionMenuSheet, DeleteDialog } from './components/Overlays';
-import { CalendarPicker } from './components/CalendarPicker';
-import { QuickCreateSheet } from './components/QuickCreateSheet';
-import { UpdateTaskScreen } from './components/UpdateTaskScreen';
 import { TodayScreen } from './screens/TodayScreen';
-import { FocusScreen } from './screens/FocusScreen';
-import { TodoScreen } from './screens/TodoScreen';
-import { ProfileScreen } from './screens/ProfileScreen';
-import { SettingsScreen } from './screens/SettingsScreen';
-import { AccountFlow } from './screens/AccountFlow';
 import { colors, fontFiles, frame } from './tokens';
 import { DEFAULT_MARKER, DEFAULT_REPEAT } from './model';
 import { addDays, fromIso, isoOf } from './date';
 import { useTiimoState } from './useTiimoState';
+import { loadEmojiFont } from './emojiFont';
 import type { ActionMenuRow, Tab, Task, TimeOfDay } from './model';
+
+const loadFocus = () => import('./screens/FocusScreen');
+const loadTodo = () => import('./screens/TodoScreen');
+const loadProfile = () => import('./screens/ProfileScreen');
+const loadSettings = () => import('./screens/SettingsScreen');
+const loadAccount = () => import('./screens/AccountFlow');
+const loadUpdate = () => import('./components/UpdateTaskScreen');
+const loadCalendar = () => import('./components/CalendarPicker');
+const loadQuickCreate = () => import('./components/QuickCreateSheet');
+const loadOverlays = () => import('./components/Overlays');
+const FocusScreen = React.lazy(() => loadFocus().then((m) => ({ default: m.FocusScreen })));
+const TodoScreen = React.lazy(() => loadTodo().then((m) => ({ default: m.TodoScreen })));
+const ProfileScreen = React.lazy(() => loadProfile().then((m) => ({ default: m.ProfileScreen })));
+const SettingsScreen = React.lazy(() => loadSettings().then((m) => ({ default: m.SettingsScreen })));
+const AccountFlow = React.lazy(() => loadAccount().then((m) => ({ default: m.AccountFlow })));
+const UpdateTaskScreen = React.lazy(() => loadUpdate().then((m) => ({ default: m.UpdateTaskScreen })));
+const CalendarPicker = React.lazy(() => loadCalendar().then((m) => ({ default: m.CalendarPicker })));
+const QuickCreateSheet = React.lazy(() => loadQuickCreate().then((m) => ({ default: m.QuickCreateSheet })));
+const ActionMenuSheet = React.lazy(() => loadOverlays().then((m) => ({ default: m.ActionMenuSheet })));
+const DeleteDialog = React.lazy(() => loadOverlays().then((m) => ({ default: m.DeleteDialog })));
+
+const Deferred = ({ children }: { children: React.ReactNode }) => <React.Suspense fallback={null}>{children}</React.Suspense>;
+
+let prefetched = false;
+function prefetch() {
+  if (prefetched) return;
+  prefetched = true;
+  [loadFocus, loadTodo, loadProfile, loadSettings, loadAccount, loadUpdate, loadCalendar, loadQuickCreate, loadOverlays].forEach(
+    (load) => {
+      load().catch(() => undefined);
+    },
+  );
+}
 
 type Overlay =
   | { kind: 'menu'; task: Task }
@@ -48,6 +73,22 @@ function Shell() {
   const [accountOpen, setAccountOpen] = React.useState(false);
   const [profileName, setProfileName] = React.useState<string | null>(null);
   const now = React.useMemo(() => new Date(), []);
+  React.useEffect(() => {
+    let done = false;
+    const warm = () => {
+      if (done) return;
+      done = true;
+      loadEmojiFont();
+      prefetch();
+    };
+    const t = setTimeout(warm, 8000);
+    if (Platform.OS === 'web' && typeof document !== 'undefined' && document.fonts) {
+      document.fonts.ready.then(warm, warm);
+    } else {
+      warm();
+    }
+    return () => clearTimeout(t);
+  }, []);
 
   const close = () => setOverlay(null);
   const selectTab = (tab: Tab) => {
@@ -82,6 +123,10 @@ function Shell() {
         close();
         state.updateTask(task.id, { date: isoOf(addDays(fromIso(task.date), 1)) });
         break;
+      case 'Reschedule for today':
+        close();
+        state.updateTask(task.id, { date: isoOf(now) });
+        break;
       case 'Reschedule task':
         setOverlay({ kind: 'reschedule', task });
         break;
@@ -106,7 +151,7 @@ function Shell() {
           />
         ) : null}
         {!profileOpen && !settingsOpen && state.tab === 'focus' ? (
-          <FocusScreen
+          <Deferred><FocusScreen
             task={state.activeTask}
             timer={state.timer}
             onToggleTimer={state.toggleTimer}
@@ -114,13 +159,13 @@ function Shell() {
               if (state.activeTask) setOverlay({ kind: 'edit', task: state.activeTask });
             }}
             onCreateTask={() => setOverlay({ kind: 'create', section: 'anytime' })}
-          />
+          /></Deferred>
         ) : null}
         {!profileOpen && !settingsOpen && state.tab === 'todo' ? (
-          <TodoScreen onQuickAdd={() => setOverlay({ kind: 'create', section: 'anytime' })} onSettings={openSettings} />
+          <Deferred><TodoScreen onQuickAdd={() => setOverlay({ kind: 'create', section: 'anytime' })} onSettings={openSettings} /></Deferred>
         ) : null}
-        {profileOpen ? <ProfileScreen name={profileName} onSignIn={() => setAccountOpen(true)} /> : null}
-        {settingsOpen ? <SettingsScreen onSignIn={() => setAccountOpen(true)} /> : null}
+        {profileOpen ? <Deferred><ProfileScreen name={profileName} onSignIn={() => setAccountOpen(true)} /></Deferred> : null}
+        {settingsOpen ? <Deferred><SettingsScreen onSignIn={() => setAccountOpen(true)} /></Deferred> : null}
         <BottomNav
           active={state.tab}
           onSelect={selectTab}
@@ -132,7 +177,7 @@ function Shell() {
 
         {overlay?.kind === 'create' ? (
           <View style={styles.cover} role="dialog" aria-modal>
-            <UpdateTaskScreen
+            <Deferred><UpdateTaskScreen
               heading="New task"
               task={{ ...NEW_TASK, timeOfDay: overlay.section, date: isoOf(now), ...overlay.draft }}
               onSubmit={(patch) => {
@@ -149,13 +194,13 @@ function Shell() {
               onDismiss={close}
               onStart={close}
               onDelete={close}
-            />
+            /></Deferred>
           </View>
         ) : null}
 
         {overlay?.kind === 'edit' ? (
           <View style={styles.cover} role="dialog" aria-modal>
-            <UpdateTaskScreen
+            <Deferred><UpdateTaskScreen
               task={overlay.task}
               onSubmit={(patch) => {
                 state.updateTask(overlay.task.id, patch);
@@ -168,11 +213,11 @@ function Shell() {
                 state.startFocus(id);
               }}
               onDelete={() => setOverlay({ kind: 'delete', task: overlay.task })}
-            />
+            /></Deferred>
           </View>
         ) : null}
         {accountOpen ? (
-          <AccountFlow
+          <Deferred><AccountFlow
             onClose={() => setAccountOpen(false)}
             onDone={(name) => {
               setAccountOpen(false);
@@ -180,12 +225,12 @@ function Shell() {
               setSettingsOpen(false);
               setProfileOpen(true);
             }}
-          />
+          /></Deferred>
         ) : null}
       </View>
 
       {overlay?.kind === 'quickCreate' ? (
-        <QuickCreateSheet
+        <Deferred><QuickCreateSheet
           section={overlay.section}
           onDismiss={close}
           onSubmit={(title, durationMin, timeOfDay, repeat) => {
@@ -195,29 +240,29 @@ function Shell() {
           onMore={(title, durationMin, timeOfDay, repeat) =>
             setOverlay({ kind: 'create', section: timeOfDay, draft: { title, durationMin, timeOfDay, repeat } })
           }
-        />
+        /></Deferred>
       ) : null}
       {overlay?.kind === 'menu' ? (
-        <ActionMenuSheet task={overlay.task} onSelect={onMenuSelect} onDismiss={close} />
+        <Deferred><ActionMenuSheet task={overlay.task} onSelect={onMenuSelect} onDismiss={close} /></Deferred>
       ) : null}
       {overlay?.kind === 'reschedule' ? (
-        <CalendarPicker
+        <Deferred><CalendarPicker
           value={overlay.task.date}
           onSave={(iso) => {
             state.updateTask(overlay.task.id, { date: iso });
             close();
           }}
           onDismiss={close}
-        />
+        /></Deferred>
       ) : null}
       {overlay?.kind === 'delete' ? (
-        <DeleteDialog
+        <Deferred><DeleteDialog
           onCancel={close}
           onConfirm={() => {
             state.deleteTask(overlay.task.id);
             close();
           }}
-        />
+        /></Deferred>
       ) : null}
     </View>
   );

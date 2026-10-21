@@ -13,8 +13,8 @@ const GROUPS: Array<{ title: string; rows: Row[] }> = [
     title: 'GENERAL',
     rows: [
       { key: 'lang', label: 'Language', glyph: 'cog', value: 'English' },
-      { key: 'week', label: 'Start of week', glyph: 'calendar', value: 'Monday' },
-      { key: 'time', label: 'Time format', glyph: 'clock', value: '24-hour' },
+      { key: 'week', label: 'Start of week', glyph: 'calendar', value: 'Sunday' },
+      { key: 'time', label: 'Time format', glyph: 'clock', value: '12-hour' },
     ],
   },
   {
@@ -54,7 +54,8 @@ export function SettingsScreen({ onSignIn }: { onSignIn: () => void }) {
                 <Pressable
                   key={row.key}
                   accessibilityLabel={row.label}
-                  accessibilityRole="button"
+                  accessibilityRole={'toggle' in row ? 'switch' : 'button'}
+                  aria-checked={'toggle' in row ? on(row.key, row.on) : undefined}
                   onPress={() => {
                     if ('toggle' in row) {
                       setToggles(prev => ({ ...prev, [row.key]: !on(row.key, row.on) }));

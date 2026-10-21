@@ -4,14 +4,16 @@ import { ArrowRightGlyph, BreakdownGlyph } from './Glyphs';
 import { Icon } from './Icon';
 import type { GlyphName } from './Icon';
 import { colors, type as typo } from '../tokens';
-import { ACTION_MENU_ROWS, IMPLEMENTED_ROWS } from '../model';
-import type { Task } from '../model';
+import { IMPLEMENTED_ROWS, menuRowsFor } from '../model';
+import type { ActionMenuRow, Task } from '../model';
+import { isoOf } from '../date';
 
 const MENU_GLYPH: Record<string, GlyphName | null> = {
   'Make a copy': 'copy',
   'Move to list': 'trayUp',
   'Reschedule task': 'calendar',
   'Reschedule for tomorrow': 'calendar',
+  'Reschedule for today': 'calendar',
   'Suggest breakdown': null,
   'Start task': 'play',
   'Edit task': 'pencil',
@@ -28,7 +30,7 @@ export function ActionMenuSheet({
   onDismiss,
 }: {
   task: Task;
-  onSelect: (row: (typeof ACTION_MENU_ROWS)[number]) => void;
+  onSelect: (row: ActionMenuRow) => void;
   onDismiss: () => void;
 }) {
   return (
@@ -40,7 +42,7 @@ export function ActionMenuSheet({
       />
       <View style={styles.sheet}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          {ACTION_MENU_ROWS.map((row) => {
+          {menuRowsFor(task.date, isoOf(new Date())).map((row) => {
             const Glyph = MENU_GLYPH[row];
             const isDestructive = row === 'Delete task';
             const implemented = IMPLEMENTED_ROWS.includes(row);

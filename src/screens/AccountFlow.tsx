@@ -1,9 +1,24 @@
 import * as React from 'react';
 import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Icon } from '../components/Icon';
-import { account, colors, fonts, type as typo } from '../tokens';
+import { account, colors, fonts, onboarding, type as typo } from '../tokens';
+import { InterludePage, ND_PAGE, NEED_PAGE, NotificationsPage, QuestionPage, RoutinePage, WelcomePage } from './Onboarding';
 
-type Step = 'signUp' | 'profile' | 'notify';
+type Step =
+  | 'welcome'
+  | 'need'
+  | 'nd'
+  | 'routinesIntro'
+  | 'morning'
+  | 'afternoon'
+  | 'evening'
+  | 'sorted'
+  | 'notifications'
+  | 'signUp'
+  | 'profile'
+  | 'notify';
+
+const FIRST_RUN: Step[] = ['need', 'nd', 'routinesIntro', 'morning', 'afternoon', 'evening', 'sorted', 'notifications', 'signUp'];
 
 interface Props {
   onClose: () => void;
@@ -30,19 +45,38 @@ function useBackSteps(depth: number, onBack: () => void) {
 }
 
 export function AccountFlow({ onClose, onDone }: Props) {
-  const [step, setStep] = React.useState<Step>('signUp');
+  const [trail, setTrail] = React.useState<Step[]>(['welcome']);
   const [name, setName] = React.useState('');
-  const depth = step === 'signUp' ? 1 : step === 'profile' ? 2 : 3;
-  useBackSteps(depth, () => {
-    if (step === 'notify') setStep('profile');
-    else if (step === 'profile') setStep('signUp');
-    else onClose();
+  const step = trail[trail.length - 1];
+  const go = (next: Step) => setTrail((prev) => [...prev, next]);
+  const nextFirstRun = () => go(FIRST_RUN[FIRST_RUN.indexOf(step) + 1] ?? 'signUp');
+  useBackSteps(trail.length, () => {
+    if (trail.length <= 1) onClose();
+    else setTrail((prev) => prev.slice(0, -1));
   });
 
   return (
     <View style={styles.page} role="dialog" aria-modal>
-      {step === 'signUp' ? <SignUp onContinue={() => setStep('profile')} /> : null}
-      {step === 'profile' ? <CreateProfile name={name} onChange={setName} onSave={() => setStep('notify')} /> : null}
+      {step === 'welcome' ? <WelcomePage onStart={() => go('need')} onLogIn={() => go('signUp')} /> : null}
+      {step === 'need' ? <QuestionPage key="need" step={1} {...NEED_PAGE} onContinue={nextFirstRun} /> : null}
+      {step === 'nd' ? <QuestionPage key="nd" step={2} {...ND_PAGE} onContinue={nextFirstRun} /> : null}
+      {step === 'routinesIntro' ? (
+        <InterludePage
+          key="intro"
+          text="Pick the routines that fit your morning, afternoon and evenings."
+          top={onboarding.interludeTop}
+          onDone={nextFirstRun}
+        />
+      ) : null}
+      {step === 'morning' ? <RoutinePage key="morning" part="morning" step={3} onNext={nextFirstRun} /> : null}
+      {step === 'afternoon' ? <RoutinePage key="afternoon" part="afternoon" step={4} onNext={nextFirstRun} /> : null}
+      {step === 'evening' ? <RoutinePage key="evening" part="evening" step={5} onNext={nextFirstRun} /> : null}
+      {step === 'sorted' ? (
+        <InterludePage key="sorted" text="Routines sorted! Time to complete your profile" top={onboarding.sortedTop} onDone={nextFirstRun} />
+      ) : null}
+      {step === 'notifications' ? <NotificationsPage step={7} onNext={nextFirstRun} /> : null}
+      {step === 'signUp' ? <SignUp onContinue={() => go('profile')} /> : null}
+      {step === 'profile' ? <CreateProfile name={name} onChange={setName} onSave={() => go('notify')} /> : null}
       {step === 'notify' ? <NotifyChoice onContinue={() => onDone(name.trim())} /> : null}
     </View>
   );
