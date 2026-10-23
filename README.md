@@ -81,7 +81,7 @@ The static output is written to `dist/`. Serve that directory over HTTP or HTTPS
 
 ## Demo build
 
-The published demo at <https://migrant620.github.io/tiimo/> is built from this repository. It was last rebuilt and redeployed on 2026-10-21 (GitHub Pages commit `0ea9588c`).
+The published demo at <https://migrant620.github.io/tiimo/> is built from this repository. It was last rebuilt and redeployed on 2026-10-23 (GitHub Pages commit `0b6df1d2`).
 
 ## Scope and limitations
 
@@ -99,9 +99,9 @@ Have an app whose screens you want to put in front of your team, a client or inv
 
 ## License
 
-The prototype's original code and materials are **source-available for noncommercial self-directed study and research only**, under the [M620 Study and Research License](LICENSE). Commercial products, business use, client deliverables, and hosted services are not permitted without a separate written license. Free access does not itself permit commercial use.
+The prototype's original code and materials are released under the [MIT License](LICENSE). Third-party components, fonts and icons retain their own licenses.
 
-This is not an open-source license. Third-party components retain their own licenses.
+Product names and trademarks belong to their owners; the license covers this prototype's code and original materials, not those marks.
 
 ## Attribution
 
