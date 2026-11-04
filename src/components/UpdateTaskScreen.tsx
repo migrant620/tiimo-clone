@@ -7,7 +7,7 @@ import { Icon } from './Icon';
 import type { GlyphName } from './Icon';
 import { CalendarPicker } from './CalendarPicker';
 import { colors, form, frame, lift, type as typo } from '../tokens';
-import { DEFAULT_REPEAT, REPEAT_OPTIONS } from '../model';
+import { DEFAULT_REPEAT, REPEAT_OPTIONS, repeatOptionForKey } from '../model';
 import type { RepeatOption, Task, TimeOfDay } from '../model';
 import { dateLabel, fromIso } from '../date';
 import { emojiFamily } from '../emojiFont';
@@ -51,7 +51,7 @@ interface Props {
   heading?: string;
   onSubmit: (patch: Partial<Omit<Task, 'id'>>) => void;
   onDismiss: () => void;
-  onStart: () => void;
+  onStart: (patch: Partial<Omit<Task, 'id'>>) => void;
   onDelete: () => void;
 }
 
@@ -65,21 +65,80 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
   const [pickerOpen, setPickerOpen] = React.useState(false);
   const [repeatOpen, setRepeatOpen] = React.useState(false);
   const [calendarOpen, setCalendarOpen] = React.useState(false);
+  const [invalidField, setInvalidField] = React.useState<'name' | 'duration' | null>(null);
+  const nameInput = React.useRef<TextInput>(null);
+  const durationInput = React.useRef<TextInput>(null);
+  const timeTrigger = React.useRef<View>(null);
+  const repeatTrigger = React.useRef<View>(null);
+  const repeatOption = React.useRef<View>(null);
+  React.useEffect(() => {
+    if (!repeatOpen) return;
+    const frame = requestAnimationFrame(() => repeatOption.current?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [repeatOpen]);
 
-  const save = () => {
-    const parsed = Number.parseInt(duration.replace(/[^0-9]/g, ''), 10);
-    onSubmit({
-      title: name.trim() || task.title,
-      durationMin: Number.isFinite(parsed) && parsed > 0 ? parsed : task.durationMin,
+  const collectPatch = (): Partial<Omit<Task, 'id'>> | null => {
+    const title = name.trim();
+    if (!title) {
+      setInvalidField('name');
+      nameInput.current?.focus();
+      return null;
+    }
+    const rawDuration = duration.trim();
+    const parsed = /^\d+$/.test(rawDuration) ? Number(rawDuration) : NaN;
+    if (!Number.isSafeInteger(parsed) || parsed <= 0) {
+      setInvalidField('duration');
+      durationInput.current?.focus();
+      return null;
+    }
+    setInvalidField(null);
+    return {
+      title,
+      durationMin: parsed,
       timeOfDay,
       repeat,
       date,
       notes: notes.trim(),
-    });
+    };
+  };
+  const save = () => {
+    const patch = collectPatch();
+    if (patch) onSubmit(patch);
+  };
+  const start = () => {
+    const patch = collectPatch();
+    if (patch) onStart(patch);
+  };
+  const chooseRepeat = (option: RepeatOption) => {
+    setRepeat(option);
+    setRepeatOpen(false);
+    requestAnimationFrame(() => repeatTrigger.current?.focus());
+  };
+  const repeatKeyboard = (index: number) => ({
+    onKeyDownCapture: (event: React.KeyboardEvent) => {
+      if (event.nativeEvent.isComposing || event.altKey || event.ctrlKey || event.metaKey || event.repeat) return;
+      const option = repeatOptionForKey(event.key, index, REPEAT_OPTIONS);
+      if (!option) return;
+      event.preventDefault();
+      event.stopPropagation();
+      chooseRepeat(option);
+    },
+  });
+  const pickerKeyboard = {
+    onKeyDownCapture: (event: React.KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.nativeEvent.isComposing || calendarOpen) return;
+      const trigger = repeatOpen ? repeatTrigger : pickerOpen ? timeTrigger : null;
+      if (!trigger) return;
+      event.preventDefault();
+      event.stopPropagation();
+      setPickerOpen(false);
+      setRepeatOpen(false);
+      requestAnimationFrame(() => trigger.current?.focus());
+    },
   };
 
   return (
-    <ScrollView style={styles.page} contentContainerStyle={styles.canvas} showsVerticalScrollIndicator={false}>
+    <ScrollView style={styles.page} contentContainerStyle={styles.canvas} showsVerticalScrollIndicator={false} {...pickerKeyboard}>
       <Pressable accessibilityRole="button" accessibilityLabel="Close without saving" onPress={onDismiss} style={[at(form.close), styles.round, styles.plain]}>
         <Icon name="close" size={26.2} color={colors.ink} />
       </Pressable>
@@ -93,9 +152,14 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
       <View style={[span(form.nameField), styles.field]} />
       <EdgeLabel text="Task name" label={form.nameLabel} patch={form.namePatch} patchColor={colors.surface} floating />
       <TextInput
+        ref={nameInput}
         accessibilityLabel="Task name"
+        {...{ 'aria-invalid': invalidField === 'name' }}
         value={name}
-        onChangeText={setName}
+        onChangeText={(value) => {
+          setName(value);
+          setInvalidField((field) => field === 'name' ? null : field);
+        }}
         placeholder="Task name"
         placeholderTextColor={colors.muted}
         style={[span(form.nameInput), styles.nameInput]}
@@ -108,9 +172,14 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
       </View>
 
       <Pressable
+        ref={timeTrigger}
         accessibilityRole="button"
         accessibilityLabel="Time of day"
-        onPress={() => setPickerOpen((open) => !open)}
+        aria-expanded={pickerOpen}
+        onPress={() => {
+          setPickerOpen((open) => !open);
+          setRepeatOpen(false);
+        }}
         style={[span(form.timeField), styles.field, styles.row]}
       >
         <View style={styles.rowIcon}>
@@ -127,15 +196,24 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
         label="Date"
         patch={form.pairPatch.date}
         glyph="calendarMonth"
-        onPress={() => setCalendarOpen(true)}
+        onPress={() => {
+          setCalendarOpen(true);
+          setPickerOpen(false);
+          setRepeatOpen(false);
+        }}
       >
         <TextInput editable={false} value={dateLabel(fromIso(date))} style={[span(form.pairInput, form.dateBox[2]), styles.pairInput]} />
       </PairField>
       <PairField grow={form.durationBox[2]} label="Duration (m)" patch={form.pairPatch.duration} glyph="clock">
         <TextInput
+          ref={durationInput}
           accessibilityLabel="Duration in minutes"
+          {...{ 'aria-invalid': invalidField === 'duration' }}
           value={duration}
-          onChangeText={setDuration}
+          onChangeText={(value) => {
+            setDuration(value);
+            setInvalidField((field) => field === 'duration' ? null : field);
+          }}
           keyboardType="number-pad"
           style={[span(form.pairInput, form.durationBox[2]), styles.pairInput]}
         />
@@ -143,10 +221,14 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
       </View>
 
       <Pressable
+        ref={repeatTrigger}
         accessibilityRole="button"
         accessibilityLabel="Repeat"
         aria-expanded={repeatOpen}
-        onPress={() => setRepeatOpen((open) => !open)}
+        onPress={() => {
+          setRepeatOpen((open) => !open);
+          setPickerOpen(false);
+        }}
         style={[span(form.repeatField), styles.field, styles.row]}
       >
         <View style={[styles.rowIcon, styles.repeatIcon]}>
@@ -159,18 +241,18 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
 
       {repeatOpen ? (
         <View style={[styles.picker, styles.repeatList]} accessibilityRole="radiogroup">
-          {REPEAT_OPTIONS.map((option) => {
+          {REPEAT_OPTIONS.map((option, index) => {
             const selected = option === repeat;
             return (
               <Pressable
                 key={option}
+                ref={selected ? repeatOption : undefined}
                 accessibilityRole="radio"
                 accessibilityLabel={`Repeat ${option}`}
                 aria-checked={selected}
-                onPress={() => {
-                  setRepeat(option);
-                  setRepeatOpen(false);
-                }}
+                tabIndex={selected ? 0 : -1}
+                {...repeatKeyboard(index)}
+                onPress={() => chooseRepeat(option)}
                 style={[styles.pickerRow, selected && styles.pickerRowSelected]}
               >
                 <Text style={[styles.pickerLabel, selected && styles.pickerLabelSelected]}>{option}</Text>
@@ -202,7 +284,7 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
       <Pressable accessibilityRole="button" accessibilityLabel="Delete task" onPress={onDelete} style={[at(form.trash), styles.round, styles.raised]}>
         <Icon name="trash" size={24} color={colors.dangerIcon} />
       </Pressable>
-      <Pressable accessibilityRole="button" accessibilityLabel="Start focus" onPress={onStart} style={[at(form.play), styles.round, styles.raised]}>
+      <Pressable accessibilityRole="button" accessibilityLabel="Start focus" onPress={start} style={[at(form.play), styles.round, styles.raised]}>
         <Icon name="play" size={24} color={colors.ink} />
       </Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel="Move to list" onPress={() => undefined} style={[right(form.move), styles.movePill]}>

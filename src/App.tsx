@@ -47,7 +47,7 @@ function prefetch() {
 
 type Overlay =
   | { kind: 'menu'; task: Task }
-  | { kind: 'quickCreate'; section: TimeOfDay }
+  | { kind: 'quickCreate'; section: TimeOfDay; date: string }
   | { kind: 'create'; section: TimeOfDay; draft?: Partial<Task> }
   | { kind: 'edit'; task: Task }
   | { kind: 'delete'; task: Task }
@@ -73,6 +73,8 @@ function Shell() {
   const [accountOpen, setAccountOpen] = React.useState(false);
   const [profileName, setProfileName] = React.useState<string | null>(null);
   const now = React.useMemo(() => new Date(), []);
+  const [selectedIso, setSelectedIso] = React.useState(() => isoOf(now));
+  const [weekShift, setWeekShift] = React.useState(0);
   React.useEffect(() => {
     let done = false;
     const warm = () => {
@@ -143,10 +145,14 @@ function Shell() {
         {!profileOpen && !settingsOpen && state.tab === 'today' ? (
           <TodayScreen
             now={now}
+            selectedIso={selectedIso}
+            onSelectDate={setSelectedIso}
+            weekShift={weekShift}
+            onWeekShift={setWeekShift}
             tasks={state.tasks}
             onOpenMenu={(task) => setOverlay({ kind: 'menu', task })}
             onToggleComplete={(task) => state.setCompleted(task.id, !task.done)}
-            onQuickAdd={(section) => setOverlay({ kind: 'quickCreate', section })}
+            onQuickAdd={(section, date) => setOverlay({ kind: 'quickCreate', section, date })}
             onSettings={openSettings}
           />
         ) : null}
@@ -192,7 +198,20 @@ function Shell() {
                 close();
               }}
               onDismiss={close}
-              onStart={close}
+              onStart={(patch) => {
+                const task = state.createTask(
+                  patch.title ?? '',
+                  patch.durationMin ?? 30,
+                  patch.timeOfDay ?? overlay.section,
+                  patch.repeat ?? DEFAULT_REPEAT,
+                  patch.notes,
+                  patch.date ?? isoOf(now),
+                );
+                if (task) {
+                  close();
+                  state.startFocus(task);
+                }
+              }}
               onDelete={close}
             /></Deferred>
           </View>
@@ -207,10 +226,11 @@ function Shell() {
                 close();
               }}
               onDismiss={close}
-              onStart={() => {
-                const id = overlay.task.id;
+              onStart={(patch) => {
+                const task = { ...overlay.task, ...patch };
+                state.updateTask(task.id, patch);
                 close();
-                state.startFocus(id);
+                state.startFocus(task);
               }}
               onDelete={() => setOverlay({ kind: 'delete', task: overlay.task })}
             /></Deferred>
@@ -234,11 +254,11 @@ function Shell() {
           section={overlay.section}
           onDismiss={close}
           onSubmit={(title, durationMin, timeOfDay, repeat) => {
-            state.createTask(title, durationMin, timeOfDay, repeat);
+            state.createTask(title, durationMin, timeOfDay, repeat, undefined, overlay.date);
             close();
           }}
           onMore={(title, durationMin, timeOfDay, repeat) =>
-            setOverlay({ kind: 'create', section: timeOfDay, draft: { title, durationMin, timeOfDay, repeat } })
+            setOverlay({ kind: 'create', section: timeOfDay, draft: { title, durationMin, timeOfDay, repeat, date: overlay.date } })
           }
         /></Deferred>
       ) : null}

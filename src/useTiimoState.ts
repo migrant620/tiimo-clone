@@ -50,20 +50,19 @@ export function useTiimoState() {
     ) => {
       const clean = title.trim();
       if (!clean) return;
-      setTasks((prev) => [
-        ...prev,
-        {
-          id: nextId(),
-          title: clean,
-          durationMin,
-          timeOfDay,
-          repeat,
-          date,
-          done: false,
-          marker: DEFAULT_MARKER,
-          ...(notes ? { notes } : null),
-        },
-      ]);
+      const task: Task = {
+        id: nextId(),
+        title: clean,
+        durationMin,
+        timeOfDay,
+        repeat,
+        date,
+        done: false,
+        marker: DEFAULT_MARKER,
+        ...(notes ? { notes } : null),
+      };
+      setTasks((prev) => [...prev, task]);
+      return task;
     },
     [],
   );
@@ -83,13 +82,13 @@ export function useTiimoState() {
   }, []);
 
   const startFocus = useCallback(
-    (id: string) => {
-      const task = tasks.find((item) => item.id === id);
+    (value: string | Task) => {
+      const task = typeof value === 'string' ? tasks.find((item) => item.id === value) : value;
       if (!task) return;
       const remainingSec = task.durationMin * 60;
       const startedAt = Date.now();
       setTimer({
-        taskId: id,
+        taskId: task.id,
         remainingSec,
         running: true,
         endsAt: startedAt + remainingSec * 1000,
@@ -104,7 +103,10 @@ export function useTiimoState() {
     setTimer((prev) => {
       if (prev.taskId === null) return prev;
       if (prev.running) {
-        return { ...prev, running: false, endsAt: null };
+        const remainingSec = prev.endsAt === null
+          ? prev.remainingSec
+          : Math.max(0, Math.round((prev.endsAt - Date.now()) / 1000));
+        return { ...prev, remainingSec, running: false, endsAt: null };
       }
       const endsAt = Date.now() + prev.remainingSec * 1000;
       return { ...prev, running: true, endsAt };

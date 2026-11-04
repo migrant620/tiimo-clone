@@ -22,6 +22,14 @@ export const REPEAT_CARD_OPTIONS: readonly RepeatOption[] = REPEAT_OPTIONS.filte
 
 export const DEFAULT_REPEAT: RepeatOption = 'No repeat';
 
+export function repeatOptionForKey(key: string, index: number, options: readonly RepeatOption[]): RepeatOption | null {
+  if (key === 'Home') return options[0] ?? null;
+  if (key === 'End') return options[options.length - 1] ?? null;
+  if (key === 'Enter' || key === ' ') return options[index] ?? null;
+  const delta = key === 'ArrowDown' || key === 'ArrowRight' ? 1 : key === 'ArrowUp' || key === 'ArrowLeft' ? -1 : 0;
+  return delta ? options[(index + delta + options.length) % options.length] ?? null : null;
+}
+
 export interface Task {
   id: string;
   title: string;

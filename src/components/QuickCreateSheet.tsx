@@ -18,6 +18,7 @@ function MetaChip({
   gap,
   onPress,
   style,
+  buttonRef,
 }: {
   label: string;
   Glyph?: (props: { size?: number; color?: string }) => React.ReactElement;
@@ -26,6 +27,7 @@ function MetaChip({
   gap?: number;
   onPress?: () => void;
   style: object;
+  buttonRef?: React.Ref<View>;
 }) {
   const inner = (
     <View style={[styles.chipInner, { paddingLeft: padLeft }]}>
@@ -41,7 +43,7 @@ function MetaChip({
   return (
     <View style={[styles.chip, style]}>
       {onPress ? (
-        <Pressable accessibilityLabel={`${label} chip`} onPress={onPress} style={styles.chipPress}>
+        <Pressable ref={buttonRef} accessibilityLabel={`${label} chip`} onPress={onPress} style={styles.chipPress}>
           {inner}
         </Pressable>
       ) : (
@@ -67,6 +69,7 @@ export function QuickCreateSheet({
   const [title, setTitle] = React.useState('');
   const [repeat, setRepeat] = React.useState<RepeatOption>(DEFAULT_REPEAT);
   const [repeatOpen, setRepeatOpen] = React.useState(false);
+  const repeatTrigger = React.useRef<View>(null);
 
   const submit = () => {
     const value = title.trim();
@@ -121,6 +124,7 @@ export function QuickCreateSheet({
             padLeft={7}
             gap={9}
             onPress={() => setRepeatOpen(true)}
+            buttonRef={repeatTrigger}
             style={styles.chipC}
           />
           <Pressable
@@ -145,8 +149,12 @@ export function QuickCreateSheet({
           onSelect={(option) => {
             setRepeat(option);
             setRepeatOpen(false);
+            requestAnimationFrame(() => repeatTrigger.current?.focus());
           }}
-          onDismiss={() => setRepeatOpen(false)}
+          onDismiss={() => {
+            setRepeatOpen(false);
+            requestAnimationFrame(() => repeatTrigger.current?.focus());
+          }}
         />
       ) : null}
     </Modal>

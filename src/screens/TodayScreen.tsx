@@ -11,28 +11,30 @@ import type { Task, TimeOfDay } from '../model';
 
 interface Props {
   now: Date;
+  selectedIso: string;
+  onSelectDate: React.Dispatch<React.SetStateAction<string>>;
+  weekShift: number;
+  onWeekShift: React.Dispatch<React.SetStateAction<number>>;
   tasks: Task[];
   onOpenMenu: (task: Task) => void;
   onToggleComplete: (task: Task) => void;
-  onQuickAdd: (section: TimeOfDay) => void;
+  onQuickAdd: (section: TimeOfDay, date: string) => void;
   onSettings?: () => void;
 }
 
-export function TodayScreen({ now, tasks, onOpenMenu, onToggleComplete, onQuickAdd, onSettings }: Props) {
+export function TodayScreen({ now, selectedIso, onSelectDate, weekShift, onWeekShift, tasks, onOpenMenu, onToggleComplete, onQuickAdd, onSettings }: Props) {
   const [collapsed, setCollapsed] = React.useState<Record<string, boolean>>({ done: true });
-  const [selectedIso, setSelectedIso] = React.useState(() => isoOf(now));
-  const [weekShift, setWeekShift] = React.useState(0);
   const toggle = (key: string) => setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const weekStart = React.useMemo(() => addDays(startOfWeek(now), weekShift * 7), [now, weekShift]);
   const todayIso = isoOf(now);
   const shiftWeek = (delta: number) => {
-    setWeekShift((value) => value + delta);
-    setSelectedIso((iso) => isoOf(addDays(fromIso(iso), delta * 7)));
+    onWeekShift((value) => value + delta);
+    onSelectDate((iso) => isoOf(addDays(fromIso(iso), delta * 7)));
   };
   const backToToday = () => {
-    setWeekShift(0);
-    setSelectedIso(todayIso);
+    onWeekShift(0);
+    onSelectDate(todayIso);
   };
   const dayTasks = tasks.filter((task) => task.date === selectedIso);
   const activeOf = (section: TimeOfDay) => dayTasks.filter((task) => !task.done && task.timeOfDay === section);
@@ -41,7 +43,7 @@ export function TodayScreen({ now, tasks, onOpenMenu, onToggleComplete, onQuickA
   return (
     <View style={styles.page}>
       <TodayHeader
-        onAdd={() => onQuickAdd('anytime')}
+        onAdd={() => onQuickAdd('anytime', selectedIso)}
         onSettings={onSettings}
         onToday={selectedIso === todayIso ? undefined : backToToday}
       />
@@ -53,7 +55,7 @@ export function TodayScreen({ now, tasks, onOpenMenu, onToggleComplete, onQuickA
         <DateHeader
           weekStart={weekStart}
           selectedIso={selectedIso}
-          onSelect={setSelectedIso}
+          onSelect={onSelectDate}
           onWeekShift={shiftWeek}
         />
 
@@ -68,10 +70,10 @@ export function TodayScreen({ now, tasks, onOpenMenu, onToggleComplete, onQuickA
                 count={items.length}
                 expanded={!isCollapsed}
                 onToggle={() => toggle(section)}
-                onAdd={items.length > 0 ? () => onQuickAdd(section) : undefined}
+                onAdd={items.length > 0 ? () => onQuickAdd(section, selectedIso) : undefined}
               />
               {isCollapsed ? null : items.length === 0 ? (
-                <PlaceholderRow section={section} onQuickAdd={() => onQuickAdd(section)} />
+                <PlaceholderRow section={section} onQuickAdd={() => onQuickAdd(section, selectedIso)} />
               ) : (
                 items.map((task) => (
                   <TaskRow

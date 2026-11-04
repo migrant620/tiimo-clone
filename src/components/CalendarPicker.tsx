@@ -3,7 +3,7 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { ViewStyle } from 'react-native';
 import { Icon } from './Icon';
 import { calendar as cal, colors, frame, type as typo } from '../tokens';
-import { fromIso, isoOf, monthGrid, monthTitle, pickerDateLabel } from '../date';
+import { addDays, fromIso, isoOf, monthGrid, monthTitle, pickerDateLabel } from '../date';
 
 type Box = readonly [number, number, number, number];
 const at = ([left, top, width, height]: Box): ViewStyle => ({ position: 'absolute', left, top, width, height });
@@ -34,6 +34,40 @@ export function CalendarPicker({
   };
 
   const grid = monthGrid(view.year, view.month);
+  const dayRefs = React.useRef(new Map<string, View>());
+  const selectedDate = fromIso(selected);
+  const tabStop = selectedDate.getFullYear() === view.year && selectedDate.getMonth() === view.month
+    ? selected
+    : isoOf(new Date(view.year, view.month, 1));
+  const dayKeyboard = (iso: string) => ({
+    onKeyDownCapture: (event: React.KeyboardEvent) => {
+      if (event.nativeEvent.isComposing || event.altKey || event.ctrlKey || event.metaKey) return;
+      const day = fromIso(iso);
+      let next: Date;
+      switch (event.key) {
+        case 'ArrowLeft': next = addDays(day, -1); break;
+        case 'ArrowRight': next = addDays(day, 1); break;
+        case 'ArrowUp': next = addDays(day, -7); break;
+        case 'ArrowDown': next = addDays(day, 7); break;
+        case 'Home': next = addDays(day, -day.getDay()); break;
+        case 'End': next = addDays(day, 6 - day.getDay()); break;
+        case 'PageUp':
+        case 'PageDown': {
+          const month = day.getMonth() + (event.key === 'PageUp' ? -1 : 1);
+          const lastDay = new Date(day.getFullYear(), month + 1, 0).getDate();
+          next = new Date(day.getFullYear(), month, Math.min(day.getDate(), lastDay));
+          break;
+        }
+        default: return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      const nextIso = isoOf(next);
+      setSelected(nextIso);
+      setView({ year: next.getFullYear(), month: next.getMonth() });
+      requestAnimationFrame(() => dayRefs.current.get(nextIso)?.focus());
+    },
+  });
 
   return (
     <Modal transparent visible animationType="none" onRequestClose={onDismiss}>
@@ -99,9 +133,13 @@ export function CalendarPicker({
           return (
             <Pressable
               key={iso}
+              ref={(element) => { if (element) dayRefs.current.set(iso, element); else dayRefs.current.delete(iso); }}
               accessibilityRole="button"
               accessibilityLabel={String(day)}
               aria-selected={selectedDay}
+              {...{ 'aria-pressed': selectedDay }}
+              tabIndex={iso === tabStop ? 0 : -1}
+              {...dayKeyboard(iso)}
               onPress={() => setSelected(iso)}
               style={[
                 styles.dayCell,

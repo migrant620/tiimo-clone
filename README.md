@@ -47,7 +47,7 @@ The full token set — colours, type scale, spacing, radii, elevation and compon
 |---|---|
 | Today | Add a task with the + button, collapse and expand the Anytime, Morning, Afternoon and Evening sections, and tick a task off to move it to Done. |
 | Task actions | Tap a task to open its action menu: start it, edit it, or delete it with a confirmation. |
-| Update task | Rename a task, change its duration, time of day or repeat option, then save or close without saving. |
+| Update task | Edit the name, duration, date, notes, time of day or repeat option. Save, start focus with those edits, or close without saving. |
 | Focus | Start a task, pause and resume the countdown, and watch the purple arc travel round the ring. |
 
 ### A first walkthrough
@@ -81,7 +81,7 @@ The static output is written to `dist/`. Serve that directory over HTTP or HTTPS
 
 ## Demo build
 
-The published demo at <https://migrant620.github.io/tiimo/> is built from this repository. It was last rebuilt and redeployed on 2026-10-23 (GitHub Pages commit `0b6df1d2`).
+The published demo at <https://migrant620.github.io/tiimo/> is built from this repository. It was last rebuilt and redeployed on 2026-11-04 (GitHub Pages commit `d901ae6d`).
 
 ## Scope and limitations
 
@@ -89,8 +89,8 @@ The published demo at <https://migrant620.github.io/tiimo/> is built from this r
 - **Task emoji.** Tiimo picks a task's emoji automatically from its name. This prototype does not reproduce that and always shows 📝.
 - **Typeface.** Tiimo uses Recoleta, a commercial typeface. This prototype uses the open Fraunces, sized to the same widths; stroke weight differs slightly.
 - **Artwork.** The profile character is replaced by a plain gradient, and a few small vector icons are close approximations.
-- **Not yet built.** Timer completion at 00:00, sub-task editing, notes, the date picker and Move to list are shown but not functional.
-- **Mobile layout on the web.** The interface is designed for a phone-width column; on wider screens it stays a centred column.
+- **Not yet built.** Timer completion at 00:00, sub-task editing and Move to list are shown but not functional.
+- **Mobile layout on the web.** The interface is designed for a phone-width column; on wider screens it stays a centred column. The date picker is clipped on screens 320 pixels wide.
 - **Validation scope.** The first-batch screens and responsive layouts have been checked in Chromium. This does not establish complete feature coverage, Safari/Firefox compatibility, or native Android/iOS acceptance.
 
 ## Commission a prototype
