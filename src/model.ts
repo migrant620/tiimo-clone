@@ -45,9 +45,22 @@ export interface Task {
 export interface TimerState {
   taskId: string | null;
   remainingSec: number;
+  totalSec: number;
   running: boolean;
   endsAt: number | null;
   startedAt: number | null;
+}
+
+export function validTimerDeadline(now: number, seconds: number): boolean {
+  const milliseconds = seconds * 1_000;
+  const deadline = now + milliseconds;
+  return Number.isSafeInteger(now) && Number.isSafeInteger(seconds) && seconds >= 0
+    && Number.isSafeInteger(milliseconds) && Number.isSafeInteger(deadline)
+    && Math.abs(deadline) <= 8_640_000_000_000_000;
+}
+
+export function validDurationMinutes(value: number, now = Date.now()): boolean {
+  return Number.isSafeInteger(value) && value > 0 && validTimerDeadline(now, value * 60);
 }
 
 export type Tab = 'todo' | 'today' | 'focus';

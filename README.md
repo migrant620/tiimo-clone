@@ -48,7 +48,7 @@ The full token set — colours, type scale, spacing, radii, elevation and compon
 | Today | Add a task with the + button, collapse and expand the Anytime, Morning, Afternoon and Evening sections, and tick a task off to move it to Done. |
 | Task actions | Tap a task to open its action menu: start it, edit it, or delete it with a confirmation. |
 | Update task | Edit the name, duration, date, notes, time of day or repeat option. Save, start focus with those edits, or close without saving. |
-| Focus | Start a task, pause and resume the countdown, and watch the purple arc travel round the ring. |
+| Focus | Start, pause and resume a task. At zero the countdown stops; completion stays a separate action on Today. Editing the task's default duration leaves the active session unchanged and applies to its next session. |
 
 ### A first walkthrough
 
@@ -57,7 +57,7 @@ The full token set — colours, type scale, spacing, radii, elevation and compon
 3. Tap the task again and choose **Start task**; pause and resume the timer.
 4. Go back to **Today**, tick the task, and open **Done** to see it there — tap its check again to undo.
 
-Tasks live only in this page; reloading starts a fresh day.
+Tasks and selections live only in this page; reloading starts a fresh session. Today and To-do retain their collapsed sections across tab changes, and reminder selections remain local. The sample account flow retains answers, routine choices and its marketing choice when stepping back; it does not authenticate or send those choices anywhere.
 
 ## Run locally
 
@@ -81,15 +81,16 @@ The static output is written to `dist/`. Serve that directory over HTTP or HTTPS
 
 ## Demo build
 
-The published demo at <https://migrant620.github.io/tiimo/> is built from this repository. It was last rebuilt and redeployed on 2026-11-04 (GitHub Pages commit `d901ae6d`).
+The published demo at <https://migrant620.github.io/tiimo/> is built from this repository. It was last rebuilt and redeployed on 2026-11-05 (GitHub Pages commit `aed54cb0`).
 
 ## Scope and limitations
 
-- **First batch of screens.** This edition covers the Today plan, the task action menu, the Update-task sheet, the focus timer and the delete confirmation. The To-do list, Repeat picker and quick-create sheet are included but belong to the next batch and have not yet been refined to the same standard.
+- **Partial prototype.** This edition includes Today, task actions, create/edit forms, the focus timer, delete confirmation, the empty To-do groups, repeat/date pickers, quick create, and a sample account/onboarding flow. Profile and settings are prototype surfaces; this is not complete Tiimo coverage.
 - **Task emoji.** Tiimo picks a task's emoji automatically from its name. This prototype does not reproduce that and always shows 📝.
-- **Typeface.** Tiimo uses Recoleta, a commercial typeface. This prototype uses the open Fraunces, sized to the same widths; stroke weight differs slightly.
-- **Artwork.** The profile character is replaced by a plain gradient, and a few small vector icons are close approximations.
-- **Not yet built.** Timer completion at 00:00, sub-task editing and Move to list are shown but not functional.
+- **Typeface.** Tiimo uses Recoleta, a commercial typeface. This prototype uses the open Fraunces as a substitute, with different glyph shapes and font metrics.
+- **Artwork.** Avatars are original simplified designs, and a few small vector icons are approximations.
+- **Timer scope.** Reaching 00:00 stops the local timer and disables resuming that exhausted session. It does not automatically complete the task, play an alarm or schedule a notification. A running session keeps its original duration; a saved duration change applies when starting another session. Unsafe durations that cannot form a valid JavaScript date are rejected.
+- **Remaining controls.** Sub-task editing, Move to list, breakdown suggestions, account sync, real sign-in and real notification delivery remain unavailable. Reminder switches only store local selections.
 - **Mobile layout on the web.** The interface is designed for a phone-width column; on wider screens it stays a centred column. The date picker is clipped on screens 320 pixels wide.
 - **Validation scope.** The first-batch screens and responsive layouts have been checked in Chromium. This does not establish complete feature coverage, Safari/Firefox compatibility, or native Android/iOS acceptance.
 
@@ -107,4 +108,4 @@ Product names and trademarks belong to their owners; the license covers this pro
 
 This is an independent prototype by M620, not an official Tiimo product and not affiliated with or endorsed by Tiimo. Third-party names identify the interface being demonstrated.
 
-Bundled fonts retain their own licenses: Roboto and Fraunces under the SIL Open Font License 1.1, and the icon fonts under the licenses listed in `assets/fonts/`. See the [third-party notices](public/third-party-notices.txt); the Web build also serves this file at `/third-party-notices.txt`.
+Bundled fonts retain their own licenses: Roboto and Fraunces under the SIL Open Font License 1.1, and the icon fonts under the licenses listed in `assets/fonts/`. See the [third-party notices](https://migrant620.github.io/tiimo/third-party-notices.txt).

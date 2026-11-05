@@ -16,15 +16,15 @@ interface Props {
   weekShift: number;
   onWeekShift: React.Dispatch<React.SetStateAction<number>>;
   tasks: Task[];
+  collapsed: Record<string, boolean>;
+  onToggleSection: (key: string) => void;
   onOpenMenu: (task: Task) => void;
   onToggleComplete: (task: Task) => void;
   onQuickAdd: (section: TimeOfDay, date: string) => void;
   onSettings?: () => void;
 }
 
-export function TodayScreen({ now, selectedIso, onSelectDate, weekShift, onWeekShift, tasks, onOpenMenu, onToggleComplete, onQuickAdd, onSettings }: Props) {
-  const [collapsed, setCollapsed] = React.useState<Record<string, boolean>>({ done: true });
-  const toggle = (key: string) => setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
+export function TodayScreen({ now, selectedIso, onSelectDate, weekShift, onWeekShift, tasks, collapsed, onToggleSection: toggle, onOpenMenu, onToggleComplete, onQuickAdd, onSettings }: Props) {
 
   const weekStart = React.useMemo(() => addDays(startOfWeek(now), weekShift * 7), [now, weekShift]);
   const todayIso = isoOf(now);

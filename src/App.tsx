@@ -72,6 +72,9 @@ function Shell() {
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const [accountOpen, setAccountOpen] = React.useState(false);
   const [profileName, setProfileName] = React.useState<string | null>(null);
+  const [todayCollapsed, setTodayCollapsed] = React.useState<Record<string, boolean>>({ done: true });
+  const [todoCollapsed, setTodoCollapsed] = React.useState<Record<string, boolean>>({ done: true });
+  const [reminders, setReminders] = React.useState<Record<string, boolean>>({});
   const now = React.useMemo(() => new Date(), []);
   const [selectedIso, setSelectedIso] = React.useState(() => isoOf(now));
   const [weekShift, setWeekShift] = React.useState(0);
@@ -150,6 +153,8 @@ function Shell() {
             weekShift={weekShift}
             onWeekShift={setWeekShift}
             tasks={state.tasks}
+            collapsed={todayCollapsed}
+            onToggleSection={(key) => setTodayCollapsed((value) => ({ ...value, [key]: !value[key] }))}
             onOpenMenu={(task) => setOverlay({ kind: 'menu', task })}
             onToggleComplete={(task) => state.setCompleted(task.id, !task.done)}
             onQuickAdd={(section, date) => setOverlay({ kind: 'quickCreate', section, date })}
@@ -168,10 +173,10 @@ function Shell() {
           /></Deferred>
         ) : null}
         {!profileOpen && !settingsOpen && state.tab === 'todo' ? (
-          <Deferred><TodoScreen onQuickAdd={() => setOverlay({ kind: 'create', section: 'anytime' })} onSettings={openSettings} /></Deferred>
+          <Deferred><TodoScreen collapsed={todoCollapsed} onToggleSection={(key) => setTodoCollapsed((value) => ({ ...value, [key]: !value[key] }))} onQuickAdd={() => setOverlay({ kind: 'create', section: 'anytime' })} onSettings={openSettings} /></Deferred>
         ) : null}
         {profileOpen ? <Deferred><ProfileScreen name={profileName} onSignIn={() => setAccountOpen(true)} /></Deferred> : null}
-        {settingsOpen ? <Deferred><SettingsScreen onSignIn={() => setAccountOpen(true)} /></Deferred> : null}
+        {settingsOpen ? <Deferred><SettingsScreen toggles={reminders} onToggle={(key) => setReminders((value) => ({ ...value, [key]: !value[key] }))} onSignIn={() => setAccountOpen(true)} /></Deferred> : null}
         <BottomNav
           active={state.tab}
           onSelect={selectTab}

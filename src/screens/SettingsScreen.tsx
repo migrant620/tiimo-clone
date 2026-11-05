@@ -33,8 +33,7 @@ const GROUPS: Array<{ title: string; rows: Row[] }> = [
   },
 ];
 
-export function SettingsScreen({ onSignIn }: { onSignIn: () => void }) {
-  const [toggles, setToggles] = React.useState<Record<string, boolean>>({});
+export function SettingsScreen({ onSignIn, toggles, onToggle }: { onSignIn: () => void; toggles: Record<string, boolean>; onToggle: (key: string) => void }) {
   const on = (key: string, fallback: boolean) => (key in toggles ? toggles[key] : fallback);
 
   return (
@@ -58,7 +57,7 @@ export function SettingsScreen({ onSignIn }: { onSignIn: () => void }) {
                   aria-checked={'toggle' in row ? on(row.key, row.on) : undefined}
                   onPress={() => {
                     if ('toggle' in row) {
-                      setToggles(prev => ({ ...prev, [row.key]: !on(row.key, row.on) }));
+                      onToggle(row.key);
                     } else if (row.key === 'signin') {
                       onSignIn();
                     }

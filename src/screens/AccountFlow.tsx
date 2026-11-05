@@ -3,6 +3,7 @@ import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-na
 import { Icon } from '../components/Icon';
 import { account, colors, fonts, onboarding, type as typo } from '../tokens';
 import { InterludePage, ND_PAGE, NEED_PAGE, NotificationsPage, QuestionPage, RoutinePage, WelcomePage } from './Onboarding';
+import type { Daypart } from './Onboarding';
 
 type Step =
   | 'welcome'
@@ -28,38 +29,81 @@ interface Props {
 function useBackSteps(depth: number, onBack: () => void) {
   const back = React.useRef(onBack);
   back.current = onBack;
+  const currentDepth = React.useRef(depth);
+  currentDepth.current = depth;
+  const finish = React.useRef<(done: () => void) => void>((done) => done());
   React.useEffect(() => {
     if (Platform.OS !== 'web' || typeof window === 'undefined') return undefined;
-    window.history.pushState({ accountStep: depth }, '');
-    const onPop = () => back.current();
+    const token = Math.random().toString(36).slice(2);
+    const marker = { ...(window.history.state ?? {}), tiimoAccount: token };
+    const ownsEntry = () => window.history.state?.tiimoAccount === token;
+    let pending = false;
+    let exit: (() => void) | null = null;
+    window.history.pushState(marker, '');
+    const onPop = () => {
+      pending = false;
+      if (exit) {
+        const done = exit;
+        exit = null;
+        done();
+        return;
+      }
+      if (currentDepth.current > 1) window.history.pushState(marker, '');
+      back.current();
+    };
+    const requestBack = () => {
+      if (pending) return;
+      pending = true;
+      window.history.back();
+    };
+    finish.current = (done) => {
+      exit = done;
+      requestBack();
+    };
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') window.history.back();
+      if (event.key !== 'Escape' || event.isComposing || event.repeat || event.defaultPrevented) return;
+      event.preventDefault();
+      event.stopPropagation();
+      requestBack();
     };
     window.addEventListener('popstate', onPop);
     window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('popstate', onPop);
       window.removeEventListener('keydown', onKey);
+      finish.current = (done) => done();
+      if (ownsEntry() && !pending) window.history.back();
     };
-  }, [depth]);
+  }, []);
+  return React.useCallback((done: () => void) => finish.current(done), []);
 }
 
 export function AccountFlow({ onClose, onDone }: Props) {
   const [trail, setTrail] = React.useState<Step[]>(['welcome']);
   const [name, setName] = React.useState('');
+  const [answers, setAnswers] = React.useState<Record<string, string>>({});
+  const [routines, setRoutines] = React.useState<Partial<Record<Daypart, Record<string, boolean>>>>({});
+  const [notifyChoice, setNotifyChoice] = React.useState<string | null>(null);
+  const routineProps = (part: Daypart) => ({
+    picked: routines[part] ?? {},
+    onPicked: (next: React.SetStateAction<Record<string, boolean>>) => setRoutines((value) => ({
+      ...value,
+      [part]: typeof next === 'function' ? next(value[part] ?? {}) : next,
+    })),
+  });
   const step = trail[trail.length - 1];
   const go = (next: Step) => setTrail((prev) => [...prev, next]);
   const nextFirstRun = () => go(FIRST_RUN[FIRST_RUN.indexOf(step) + 1] ?? 'signUp');
-  useBackSteps(trail.length, () => {
+  const finish = useBackSteps(trail.length, () => {
     if (trail.length <= 1) onClose();
-    else setTrail((prev) => prev.slice(0, -1));
+    else setTrail((prev) => prev.slice(0, Math.max(1, prev.length - 1)));
   });
 
   return (
     <View style={styles.page} role="dialog" aria-modal>
       {step === 'welcome' ? <WelcomePage onStart={() => go('need')} onLogIn={() => go('signUp')} /> : null}
-      {step === 'need' ? <QuestionPage key="need" step={1} {...NEED_PAGE} onContinue={nextFirstRun} /> : null}
-      {step === 'nd' ? <QuestionPage key="nd" step={2} {...ND_PAGE} onContinue={nextFirstRun} /> : null}
+      {step === 'need' ? <QuestionPage key="need" step={1} {...NEED_PAGE} choice={answers.need ?? null} onChoice={(choice) => setAnswers((value) => ({ ...value, need: choice }))} onContinue={nextFirstRun} /> : null}
+      {step === 'nd' ? <QuestionPage key="nd" step={2} {...ND_PAGE} choice={answers.nd ?? null} onChoice={(choice) => setAnswers((value) => ({ ...value, nd: choice }))} onContinue={nextFirstRun} /> : null}
       {step === 'routinesIntro' ? (
         <InterludePage
           key="intro"
@@ -68,16 +112,16 @@ export function AccountFlow({ onClose, onDone }: Props) {
           onDone={nextFirstRun}
         />
       ) : null}
-      {step === 'morning' ? <RoutinePage key="morning" part="morning" step={3} onNext={nextFirstRun} /> : null}
-      {step === 'afternoon' ? <RoutinePage key="afternoon" part="afternoon" step={4} onNext={nextFirstRun} /> : null}
-      {step === 'evening' ? <RoutinePage key="evening" part="evening" step={5} onNext={nextFirstRun} /> : null}
+      {step === 'morning' ? <RoutinePage key="morning" part="morning" step={3} {...routineProps('morning')} onNext={nextFirstRun} /> : null}
+      {step === 'afternoon' ? <RoutinePage key="afternoon" part="afternoon" step={4} {...routineProps('afternoon')} onNext={nextFirstRun} /> : null}
+      {step === 'evening' ? <RoutinePage key="evening" part="evening" step={5} {...routineProps('evening')} onNext={nextFirstRun} /> : null}
       {step === 'sorted' ? (
         <InterludePage key="sorted" text="Routines sorted! Time to complete your profile" top={onboarding.sortedTop} onDone={nextFirstRun} />
       ) : null}
       {step === 'notifications' ? <NotificationsPage step={7} onNext={nextFirstRun} /> : null}
       {step === 'signUp' ? <SignUp onContinue={() => go('profile')} /> : null}
       {step === 'profile' ? <CreateProfile name={name} onChange={setName} onSave={() => go('notify')} /> : null}
-      {step === 'notify' ? <NotifyChoice onContinue={() => onDone(name.trim())} /> : null}
+      {step === 'notify' ? <NotifyChoice choice={notifyChoice} onChange={setNotifyChoice} onContinue={() => finish(() => onDone(name.trim()))} /> : null}
     </View>
   );
 }
@@ -145,8 +189,7 @@ const CHOICES = [
   { key: 'yes', lead: "Yes, I'd like to", rest: ' get offers and updates' },
 ] as const;
 
-function NotifyChoice({ onContinue }: { onContinue: () => void }) {
-  const [choice, setChoice] = React.useState<string | null>(null);
+function NotifyChoice({ onContinue, choice, onChange: setChoice }: { onContinue: () => void; choice: string | null; onChange: (value: string) => void }) {
   return (
     <View style={styles.notifyBlock}>
       <Text accessibilityRole="header" style={styles.notifyTitle}>

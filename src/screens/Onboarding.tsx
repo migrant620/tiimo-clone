@@ -193,14 +193,17 @@ export function QuestionPage({
   body,
   options,
   onContinue,
+  choice,
+  onChoice: setChoice,
 }: {
   step: number;
   title: string;
   body: string;
   options: string[];
   onContinue: () => void;
+  choice: string | null;
+  onChoice: (value: string) => void;
 }) {
-  const [choice, setChoice] = React.useState<string | null>(null);
   return (
     <View style={styles.fill}>
       <StepBar step={step} />
@@ -246,10 +249,9 @@ export function InterludePage({ text, top, onDone }: { text: string; top: number
   );
 }
 
-export function RoutinePage({ part, step, onNext }: { part: Daypart; step: number; onNext: () => void }) {
+export function RoutinePage({ part, step, onNext, picked, onPicked: setPicked }: { part: Daypart; step: number; onNext: () => void; picked: Record<string, boolean>; onPicked: React.Dispatch<React.SetStateAction<Record<string, boolean>>> }) {
   const page = ROUTINE_PAGES[part];
   const Glyph = TAG_GLYPH[part];
-  const [picked, setPicked] = React.useState<Record<string, boolean>>({});
   const count = Object.values(picked).filter(Boolean).length;
   const toggle = (label: string) => setPicked((prev) => ({ ...prev, [label]: !prev[label] }));
   const suggest = () =>

@@ -7,7 +7,7 @@ import { Icon } from './Icon';
 import type { GlyphName } from './Icon';
 import { CalendarPicker } from './CalendarPicker';
 import { colors, form, frame, lift, type as typo } from '../tokens';
-import { DEFAULT_REPEAT, REPEAT_OPTIONS, repeatOptionForKey } from '../model';
+import { DEFAULT_REPEAT, REPEAT_OPTIONS, repeatOptionForKey, validDurationMinutes } from '../model';
 import type { RepeatOption, Task, TimeOfDay } from '../model';
 import { dateLabel, fromIso } from '../date';
 import { emojiFamily } from '../emojiFont';
@@ -86,7 +86,7 @@ export function UpdateTaskScreen({ task, heading = 'Update task', onSubmit, onDi
     }
     const rawDuration = duration.trim();
     const parsed = /^\d+$/.test(rawDuration) ? Number(rawDuration) : NaN;
-    if (!Number.isSafeInteger(parsed) || parsed <= 0) {
+    if (!validDurationMinutes(parsed)) {
       setInvalidField('duration');
       durationInput.current?.focus();
       return null;

@@ -60,9 +60,7 @@ function PriorityPill({
   );
 }
 
-export function TodoScreen({ onQuickAdd, onSettings }: { onQuickAdd: () => void; onSettings?: () => void }) {
-  const [collapsed, setCollapsed] = React.useState<Record<string, boolean>>({ done: true });
-  const toggle = (key: string) => setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
+export function TodoScreen({ onQuickAdd, onSettings, collapsed, onToggleSection: toggle }: { onQuickAdd: () => void; onSettings?: () => void; collapsed: Record<string, boolean>; onToggleSection: (key: string) => void }) {
 
   return (
     <View style={styles.page}>

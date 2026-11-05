@@ -82,7 +82,7 @@ Pages sit on `surface`; sheets and menus on `sheet`; raised controls (GET PRO, h
 
 ## Typography
 
-Sans text is Roboto throughout — the Android system face the app renders with. The app's serif (date headline, focus title, day numbers, timer digits, the task-name field) is Recoleta, a commercial face; this prototype substitutes the open Fraunces and scales it so string widths match. Uppercase labels are small (12.3) and tracked out rather than set large. Weights are regular except task titles, sheet headings and buttons (medium).
+Sans text is Roboto throughout — the Android system face the app renders with. The app's serif (date headline, focus title, day numbers, timer digits, the task-name field) is Recoleta, a commercial face; this prototype substitutes the open Fraunces, with different glyph shapes and font metrics. Uppercase labels are small (12.3) and tracked out rather than set large. Weights are regular except task titles, sheet headings and buttons (medium).
 
 ## Layout
 
@@ -100,22 +100,22 @@ Pills are fully rounded; cards 14 dp; form fields 14 dp with a 1 dp `#EDEBE9` bo
 
 Today sections collapse and expand; an empty section shows its own prompt ("Anytime today works") and an add disc; a populated section adds a round add control to its pill row. Task cards carry a marker chip, title, duration and a completion ring; completed tasks move to DONE with undo. The action menu lists Make a copy, Move to list, Reschedule task, Reschedule for tomorrow, Suggest breakdown, Start task, Edit task and Delete task. The Update-task sheet holds Task name (serif) with its marker, Time of day, Date and Duration (m), Repeat, one card for Sub-tasks and Sub-task timers, notes, and delete / start / Move to list. The focus timer shows the task title and start → end times, a lavender ring around a disc in the task colour, and the countdown in serif digits; a purple arc grows clockwise from the top as time passes, one full turn per task duration, with a white arrow at its head. Icons use the same open icon families the app ships (Material Design Icons, Feather, Ant Design, Font Awesome 4).
 
-## Do's and Don'ts
+## Local interaction state
 
-Use real text, inputs and stateful controls with local data. Never ship screenshots of the app, crops or proprietary artwork: the avatar is a plain gradient stand-in and the serif is an open substitute. Do not add controls the free tier does not show (there is no +1 / add-time button).
+Today and To-do keep their section-collapse choices across navigation. Reminder switches retain local selections without requesting notification permission. The sample onboarding flow keeps its answers, per-part routine choices and marketing selection when going back; browser Back and Escape step through that flow. Completing or closing the flow returns to the surrounding prototype.
+
+A focus session retains its initial duration while task defaults are edited. The countdown stops at zero; an exhausted session cannot resume. Task completion remains a separate Today action. Numeric duration validation rejects values that cannot form a safe, representable deadline. All these values are page-session state, cleared on reload.
 
 ## Responsive Behavior
 
-Mobile-first at 393 dp. On narrower screens the day strip shares the width and right-hand controls stay on the right edge; on shorter screens the focus page and the Update-task sheet scroll so every control stays reachable above the navigation bar. Wider screens centre the phone frame.
-
-## Iteration Guide
-
-Change a value in `src/tokens.ts`, rebuild, and recheck every screen that uses it; tokens are shared across screens, so one change moves several.
+Mobile-first at 393 dp, with a centred phone frame on wider screens. The day strip shares the available width and long forms scroll. The date picker's fixed internal layout retains limitations on narrow viewports.
 
 ## Known Gaps
 
 - Task markers: the app assigns an emoji from the task's name automatically; this prototype always uses 📝.
-- Serif: Fraunces stands in for Recoleta; widths match, stroke weight differs slightly.
+- Serif: Fraunces stands in for Recoleta; glyph shapes and font metrics differ.
 - A few vector icons (To-do and Focus navigation icons, time-of-day pill icons, the breakdown icon) are drawn approximations.
-- Timer completion (reaching 00:00) is not modelled yet.
-- To-do list, Repeat picker and quick-create sheet belong to the next batch and have not been rechecked against the current tokens.
+- Timer expiry is local prototype behavior; original native expiry, alarms, notification scheduling and automatic task completion are not established.
+- To-do currently shows empty priority groups. Sub-task editing, moving tasks to lists and breakdown suggestions are unavailable.
+- Profile and settings are prototype surfaces. The account flow does not authenticate, save health information to a service, subscribe to marketing or sync tasks.
+- Complete App coverage, all-browser compatibility and native Android/iOS acceptance are not established.

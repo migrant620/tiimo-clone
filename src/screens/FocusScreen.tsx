@@ -23,7 +23,7 @@ interface Props {
 }
 
 export function FocusScreen({ task, timer, onToggleTimer, onRingPress, onCreateTask }: Props) {
-  const totalSec = (task?.durationMin ?? 0) * 60;
+  const totalSec = timer.totalSec;
   const started = task && timer.startedAt !== null ? timer.startedAt : null;
 
   return (
@@ -75,6 +75,7 @@ export function FocusScreen({ task, timer, onToggleTimer, onRingPress, onCreateT
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={timer.running ? 'Pause timer' : 'Start timer'}
+          disabled={!timer.running && timer.remainingSec <= 0}
           onPress={onToggleTimer}
           style={styles.circleButton}
         >
